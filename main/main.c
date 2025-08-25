@@ -1,11 +1,14 @@
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "blink_task.h"
+#include "task_blink.h"
+#include "setup_webserver.h"
+#include "setup_wifi.h"
 
 void app_main(void)
 {
-    // Создаём задачу для мигания.
-    // Приоритет 5 является стандартным для большинства пользовательских задач.
-    xTaskCreate(&blink_task_function, "blink_task", 2048, NULL, 5, NULL);
+    setup_wifi();
+    setup_webserver();
+
+    xTaskCreate(&task_blink, "task_blink", 2048, NULL, 5, NULL);
 }
