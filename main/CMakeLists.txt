@@ -11,7 +11,9 @@ idf_component_register(
         "esp_event"
         "esp_wifi"
         "esp_http_server"
-        "esp_https_server"
         "dns_server"
     EMBED_FILES
-        "root.html")
+        "dist/browser/favicon.ico"
+        "dist/browser/index.html"
+        "dist/browser/main.js"
+        "dist/browser/styles.css")

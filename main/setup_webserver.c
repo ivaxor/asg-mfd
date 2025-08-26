@@ -1,14 +1,4 @@
-/* Captive Portal Example
-
-    This example code is in the Public Domain (or CC0 licensed, at your option.)
-
-    Unless required by applicable law or agreed to in writing, this
-    software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-    CONDITIONS OF ANY KIND, either express or implied.
-*/
-
 #include <sys/param.h>
-
 #include "esp_event.h"
 #include "esp_log.h"
 #include "esp_mac.h"
@@ -19,11 +9,112 @@
 #include "esp_http_server.h"
 #include "dns_server.h"
 #include <cJSON.h>
-
-extern const char root_start[] asm("_binary_root_html_start");
-extern const char root_end[] asm("_binary_root_html_end");
+#include <cJSON.h>
 
 static const char *TAG = "webserver";
+
+extern const char dist_browser_index_html_start[] asm("_binary_index_html_start");
+extern const char dist_browser_index_html_end[] asm("_binary_index_html_end");
+static esp_err_t index_html_handler(httpd_req_t *req)
+{
+    const uint32_t dist_browser_index_html_len = dist_browser_index_html_end - dist_browser_index_html_start;
+
+    httpd_resp_set_type(req, "text/html");
+    httpd_resp_send(req, dist_browser_index_html_start, dist_browser_index_html_len);
+
+    return ESP_OK;
+}
+static const httpd_uri_t index_html_uri = {
+    .uri = "/",
+    .method = HTTP_GET,
+    .handler = index_html_handler,
+};
+
+extern const char dist_browser_main_js_start[] asm("_binary_main_js_start");
+extern const char dist_browser_main_js_end[] asm("_binary_main_js_end");
+static esp_err_t main_js_handler(httpd_req_t *req)
+{
+    const uint32_t dist_browser_main_js_len = dist_browser_main_js_end - dist_browser_main_js_start;
+
+    httpd_resp_set_type(req, "application/javascript");
+    httpd_resp_send(req, dist_browser_main_js_start, dist_browser_main_js_len);
+
+    return ESP_OK;
+}
+static const httpd_uri_t main_js_uri = {
+    .uri = "/main.js",
+    .method = HTTP_GET,
+    .handler = main_js_handler,
+};
+
+extern const char dist_browser_styles_css_start[] asm("_binary_styles_css_start");
+extern const char dist_browser_styles_css_end[] asm("_binary_styles_css_end");
+static esp_err_t styles_css_handler(httpd_req_t *req)
+{
+    const uint32_t dist_browser_styles_css_len = dist_browser_styles_css_end - dist_browser_styles_css_start;
+
+    httpd_resp_set_type(req, "text/css");
+    httpd_resp_send(req, dist_browser_styles_css_start, dist_browser_styles_css_len);
+
+    return ESP_OK;
+}
+static const httpd_uri_t styles_css_uri = {
+    .uri = "/styles.css",
+    .method = HTTP_GET,
+    .handler = styles_css_handler,
+};
+
+extern const char dist_browser_favicon_ico_start[] asm("_binary_favicon_ico_start");
+extern const char dist_browser_favicon_ico_end[] asm("_binary_favicon_ico_end");
+static esp_err_t favicon_ico_handler(httpd_req_t *req)
+{
+    const uint32_t dist_browser_favicon_ico_len = dist_browser_favicon_ico_end - dist_browser_favicon_ico_start;
+
+    httpd_resp_set_type(req, "image/x-icon");
+    httpd_resp_send(req, dist_browser_favicon_ico_start, dist_browser_favicon_ico_len);
+
+    return ESP_OK;
+}
+static const httpd_uri_t favicon_ico_uri = {
+    .uri = "/favicon.ico",
+    .method = HTTP_GET,
+    .handler = favicon_ico_handler,
+};
+
+static esp_err_t api_info_handler(httpd_req_t *req)
+{
+    cJSON *root = cJSON_CreateObject();
+    cJSON_AddNumberToObject(root, "uptime", xTaskGetTickCount() * portTICK_PERIOD_MS / 1000);
+    cJSON_AddStringToObject(root, "status", "ok");
+
+    const char *json_string = cJSON_Print(root);
+    httpd_resp_set_type(req, "application/json");
+    httpd_resp_send(req, json_string, HTTPD_RESP_USE_STRLEN);
+
+    cJSON_Delete(root);
+    free((void *)json_string);
+    return ESP_OK;
+}
+static httpd_uri_t api_info_uri = {
+    .uri = "/api/info",
+    .method = HTTP_GET,
+    .handler = api_info_handler,
+    .user_ctx = NULL,
+};
+
+// HTTP Error (404) Handler - Redirects all requests to the root page
+esp_err_t http_404_error_handler(httpd_req_t *req, httpd_err_code_t err)
+{
+    // Set status
+    httpd_resp_set_status(req, "302 Temporary Redirect");
+    // Redirect to the "/" root directory
+    httpd_resp_set_hdr(req, "Location", "/");
+    // iOS requires content in the response to detect a captive portal, simply redirecting is not sufficient.
+    httpd_resp_send(req, "Redirect to the captive portal", HTTPD_RESP_USE_STRLEN);
+
+    ESP_LOGI(TAG, "Redirecting to root");
+    return ESP_OK;
+}
 
 static void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
 {
@@ -100,57 +191,6 @@ static void dhcp_set_captiveportal_url(void)
     ESP_ERROR_CHECK_WITHOUT_ABORT(esp_netif_dhcps_start(netif));
 }
 
-// HTTP GET Handler
-static esp_err_t root_handler(httpd_req_t *req)
-{
-    const uint32_t root_len = root_end - root_start;
-
-    httpd_resp_set_type(req, "text/html");
-    httpd_resp_send(req, root_start, root_len);
-
-    return ESP_OK;
-}
-static const httpd_uri_t root_uri = {
-    .uri = "/",
-    .method = HTTP_GET,
-    .handler = root_handler,
-};
-
-static esp_err_t api_info_handler(httpd_req_t *req)
-{
-    cJSON *root = cJSON_CreateObject();
-    cJSON_AddNumberToObject(root, "uptime", xTaskGetTickCount() * portTICK_PERIOD_MS / 1000);
-    cJSON_AddStringToObject(root, "status", "ok");
-
-    const char *json_string = cJSON_Print(root);
-    httpd_resp_set_type(req, "application/json");
-    httpd_resp_send(req, json_string, HTTPD_RESP_USE_STRLEN);
-
-    cJSON_Delete(root);
-    free((void *)json_string);
-    return ESP_OK;
-}
-static httpd_uri_t api_info_uri = {
-    .uri = "/api/info",
-    .method = HTTP_GET,
-    .handler = api_info_handler,
-    .user_ctx = NULL,
-};
-
-// HTTP Error (404) Handler - Redirects all requests to the root page
-esp_err_t http_404_error_handler(httpd_req_t *req, httpd_err_code_t err)
-{
-    // Set status
-    httpd_resp_set_status(req, "302 Temporary Redirect");
-    // Redirect to the "/" root directory
-    httpd_resp_set_hdr(req, "Location", "/");
-    // iOS requires content in the response to detect a captive portal, simply redirecting is not sufficient.
-    httpd_resp_send(req, "Redirect to the captive portal", HTTPD_RESP_USE_STRLEN);
-
-    ESP_LOGI(TAG, "Redirecting to root");
-    return ESP_OK;
-}
-
 static httpd_handle_t start_webserver(void)
 {
     httpd_handle_t server = NULL;
@@ -163,8 +203,13 @@ static httpd_handle_t start_webserver(void)
     {
         // Set URI handlers
         ESP_LOGI(TAG, "Registering URI handlers");
-        httpd_register_uri_handler(server, &root_uri);
+        httpd_register_uri_handler(server, &index_html_uri);
+        httpd_register_uri_handler(server, &main_js_uri);
+        httpd_register_uri_handler(server, &styles_css_uri);
+        httpd_register_uri_handler(server, &favicon_ico_uri);
+
         httpd_register_uri_handler(server, &api_info_uri);
+
         httpd_register_err_handler(server, HTTPD_404_NOT_FOUND, http_404_error_handler);
     }
     return server;
