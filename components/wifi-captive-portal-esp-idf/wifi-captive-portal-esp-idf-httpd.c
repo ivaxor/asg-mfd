@@ -51,24 +51,24 @@ static esp_err_t rest_common_get_handler(httpd_req_t *req)
   esp_err_t res = httpd_req_get_hdr_value_str(req, "Host", (char *)&req_hdr_host_val, sizeof(char) * req_hdr_host_len + 1);
   if (res != ESP_OK)
   {
-    ESP_LOGE(HTTPD_TAG, "failed getting HOST header value: %d", res);
+    ESP_LOGE(HTTPD_TAG, "Failed getting HOST header value: %d", res);
 
     switch (res)
     {
     case ESP_ERR_NOT_FOUND:
-      ESP_LOGE(HTTPD_TAG, "failed getting HOST header value: ESP_ERR_NOT_FOUND: Key not found: %d", res);
+      ESP_LOGE(HTTPD_TAG, "Failed getting HOST header value: ESP_ERR_NOT_FOUND: Key not found: %d", res);
       break;
 
     case ESP_ERR_INVALID_ARG:
-      ESP_LOGE(HTTPD_TAG, "failed getting HOST header value: ESP_ERR_INVALID_ARG: Null arguments: %d", res);
+      ESP_LOGE(HTTPD_TAG, "Failed getting HOST header value: ESP_ERR_INVALID_ARG: Null arguments: %d", res);
       break;
 
     case ESP_ERR_HTTPD_INVALID_REQ:
-      ESP_LOGE(HTTPD_TAG, "failed getting HOST header value: ESP_ERR_HTTPD_INVALID_REQ: Invalid HTTP request pointer: %d", res);
+      ESP_LOGE(HTTPD_TAG, "Failed getting HOST header value: ESP_ERR_HTTPD_INVALID_REQ: Invalid HTTP request pointer: %d", res);
       break;
 
     case ESP_ERR_HTTPD_RESULT_TRUNC:
-      ESP_LOGE(HTTPD_TAG, "failed getting HOST header value: ESP_ERR_HTTPD_RESULT_TRUNC: Value string truncated: %d", res);
+      ESP_LOGE(HTTPD_TAG, "Failed getting HOST header value: ESP_ERR_HTTPD_RESULT_TRUNC: Value string truncated: %d", res);
       break;
 
     default:
@@ -189,7 +189,7 @@ static esp_err_t rest_common_get_handler(httpd_req_t *req)
 static void start_httpd(void *pvParameter)
 {
   /** HTTP server */
-  ESP_LOGI(HTTPD_TAG, "Starting HTTP Server...");
+  ESP_LOGI(HTTPD_TAG, "Starting HTTP Server");
 
   REST_CHECK(base_path, "wrong base path", err);
   rest_server_context_t *rest_context = calloc(1, sizeof(rest_server_context_t));
@@ -203,9 +203,9 @@ static void start_httpd(void *pvParameter)
   config.lru_purge_enable = true;
 
   REST_CHECK(httpd_start(&server, &config) == ESP_OK, "Start HTTP server failed", err_start);
-  ESP_LOGI(HTTPD_TAG, "Started HTTP Server.");
+  ESP_LOGI(HTTPD_TAG, "Started HTTP Server");
 
-  ESP_LOGI(HTTPD_TAG, "Registering HTTP server URI handlers...");
+  ESP_LOGI(HTTPD_TAG, "Registering HTTP server URI handlers");
 
   /** URI handler */
   httpd_uri_t common_get_uri = {
@@ -216,7 +216,7 @@ static void start_httpd(void *pvParameter)
 
   httpd_register_uri_handler(server, &common_get_uri);
 
-  ESP_LOGI(HTTPD_TAG, "Registered HTTP server URI handlers.");
+  ESP_LOGI(HTTPD_TAG, "Registered HTTP server URI handlers");
 
   return;
 

@@ -65,7 +65,7 @@ void setup_webserver(void)
     ESP_LOGI(TAG, "Starting web server on port: '%d'", config.server_port);
     if (httpd_start(&server, &config) != ESP_OK)
     {
-        ESP_LOGI(TAG, "Error starting web server!");
+        ESP_LOGI(TAG, "Error starting web server");
     }
 
     httpd_register_uri_handler(server, &root_uri);
