@@ -13,14 +13,14 @@
 
 static const char *TAG = "webserver";
 
-extern const char dist_browser_index_html_start[] asm("_binary_index_html_start");
-extern const char dist_browser_index_html_end[] asm("_binary_index_html_end");
+extern const char index_html_start[] asm("_binary_index_html_start");
+extern const char index_html_end[] asm("_binary_index_html_end");
 static esp_err_t index_html_handler(httpd_req_t *req)
 {
-    const uint32_t dist_browser_index_html_len = dist_browser_index_html_end - dist_browser_index_html_start;
+    const uint32_t index_html_len = index_html_end - index_html_start;
 
     httpd_resp_set_type(req, "text/html");
-    httpd_resp_send(req, dist_browser_index_html_start, dist_browser_index_html_len);
+    httpd_resp_send(req, index_html_start, index_html_len);
 
     return ESP_OK;
 }
@@ -30,14 +30,14 @@ static const httpd_uri_t index_html_uri = {
     .handler = index_html_handler,
 };
 
-extern const char dist_browser_main_js_start[] asm("_binary_main_js_start");
-extern const char dist_browser_main_js_end[] asm("_binary_main_js_end");
+extern const char main_js_start[] asm("_binary_main_js_start");
+extern const char main_js_end[] asm("_binary_main_js_end");
 static esp_err_t main_js_handler(httpd_req_t *req)
 {
-    const uint32_t dist_browser_main_js_len = dist_browser_main_js_end - dist_browser_main_js_start;
+    const uint32_t main_js_len = main_js_end - main_js_start;
 
     httpd_resp_set_type(req, "application/javascript");
-    httpd_resp_send(req, dist_browser_main_js_start, dist_browser_main_js_len);
+    httpd_resp_send(req, main_js_start, main_js_len);
 
     return ESP_OK;
 }
@@ -47,14 +47,14 @@ static const httpd_uri_t main_js_uri = {
     .handler = main_js_handler,
 };
 
-extern const char dist_browser_styles_css_start[] asm("_binary_styles_css_start");
-extern const char dist_browser_styles_css_end[] asm("_binary_styles_css_end");
+extern const char styles_css_start[] asm("_binary_styles_css_start");
+extern const char styles_css_end[] asm("_binary_styles_css_end");
 static esp_err_t styles_css_handler(httpd_req_t *req)
 {
-    const uint32_t dist_browser_styles_css_len = dist_browser_styles_css_end - dist_browser_styles_css_start;
+    const uint32_t styles_css_len = styles_css_end - styles_css_start;
 
     httpd_resp_set_type(req, "text/css");
-    httpd_resp_send(req, dist_browser_styles_css_start, dist_browser_styles_css_len);
+    httpd_resp_send(req, styles_css_start, styles_css_len);
 
     return ESP_OK;
 }
@@ -64,14 +64,14 @@ static const httpd_uri_t styles_css_uri = {
     .handler = styles_css_handler,
 };
 
-extern const char dist_browser_favicon_ico_start[] asm("_binary_favicon_ico_start");
-extern const char dist_browser_favicon_ico_end[] asm("_binary_favicon_ico_end");
+extern const char favicon_ico_start[] asm("_binary_favicon_ico_start");
+extern const char favicon_ico_end[] asm("_binary_favicon_ico_end");
 static esp_err_t favicon_ico_handler(httpd_req_t *req)
 {
-    const uint32_t dist_browser_favicon_ico_len = dist_browser_favicon_ico_end - dist_browser_favicon_ico_start;
+    const uint32_t favicon_ico_len = favicon_ico_end - favicon_ico_start;
 
     httpd_resp_set_type(req, "image/x-icon");
-    httpd_resp_send(req, dist_browser_favicon_ico_start, dist_browser_favicon_ico_len);
+    httpd_resp_send(req, favicon_ico_start, favicon_ico_len);
 
     return ESP_OK;
 }
