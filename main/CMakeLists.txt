@@ -2,13 +2,18 @@ idf_component_register(
     SRCS
         "main.c"
         "setup_webserver.c"
+        "setup_webserver2.c"
         "setup_wifi.c"
         "task_blink.c"
     REQUIRES
         "freertos"
         "driver"
-        "nvs_flash"
-        "esp_wifi"
-        "esp_https_server"
         "json"
-        "wifi-captive-portal-esp-idf")
+        "nvs_flash"
+        "esp_event"
+        "esp_wifi"
+        "esp_http_server"
+        "esp_https_server"
+        "dns_server"
+    EMBED_FILES
+        "root.html")
