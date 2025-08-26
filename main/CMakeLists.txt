@@ -2,8 +2,6 @@ idf_component_register(
     SRCS
         "main.c"
         "setup_webserver.c"
-        "setup_webserver2.c"
-        "setup_wifi.c"
         "task_blink.c"
     REQUIRES
         "freertos"
