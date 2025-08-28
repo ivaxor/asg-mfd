@@ -11,7 +11,7 @@
 #include "cJSON.h"
 #include "include/setup_webserver_static.h"
 
-static const char *TAG = "webserver";
+static const char *TAG = "setup_webserver";
 
 // HTTP Error (404) Handler - Redirects all requests to the root page
 esp_err_t http_404_error_handler(httpd_req_t *req, httpd_err_code_t err)
@@ -118,7 +118,6 @@ static httpd_handle_t start_webserver(void)
         httpd_register_uri_handler(server, &main_js_uri);
         httpd_register_uri_handler(server, &styles_css_uri);
         httpd_register_uri_handler(server, &favicon_ico_uri);
-        httpd_register_uri_handler(server, &generate_204_uri);
         
         httpd_register_uri_handler(server, &api_info_uri);
 

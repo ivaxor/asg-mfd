@@ -10,9 +10,10 @@ idf_component_register(
         "freertos"
         "driver"
         "json"
-        "nvs_flash"
-        "esp_event"
+        "nvs_flash"        
         "esp_wifi"
+        "esp_event"
+        "esp_timer"
         "esp_http_server"
         "dns_server"
     EMBED_FILES

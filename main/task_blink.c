@@ -12,11 +12,9 @@ void task_blink(void *pvParameter)
     while (1)
     {
         gpio_set_level(LED_PIN, 0);
-        printf("LED is ON\n");
         vTaskDelay(pdMS_TO_TICKS(1000));
 
         gpio_set_level(LED_PIN, 1);
-        printf("LED is OFF\n");
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }

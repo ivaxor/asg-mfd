@@ -65,20 +65,6 @@ const httpd_uri_t favicon_ico_uri = {
     .handler = favicon_ico_handler,
 };
 
-// Handler for Android's captive portal check
-esp_err_t generate_204_handler(httpd_req_t *req)
-{
-    httpd_resp_set_status(req, "204 No Content");
-    httpd_resp_send(req, NULL, 0);
-    return ESP_OK;
-}
-const httpd_uri_t generate_204_uri = {
-    .uri = "/generate_204",
-    .method = HTTP_GET,
-    .handler = generate_204_handler,
-    .user_ctx = NULL,
-};
-
 // Handler for the API info endpoint
 esp_err_t api_info_handler(httpd_req_t *req)
 {

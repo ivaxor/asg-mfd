@@ -5,7 +5,8 @@
 
 typedef struct {
     uint32_t gpio_num;
-    bool high;
+    bool pressed;
+    int64_t timestamp;
 } button_event_t;
 
 extern QueueHandle_t button_event_queue;
