@@ -57,7 +57,7 @@ void task_button_raw_event_queue_handler(void *pvParameter)
     button_raw_event_t button_raw_event;
     while (1)
     {
-        if (xQueueReceive(button_raw_event_queue, &button_raw_event, portMAX_DELAY))
-            button_raw_event_handler(button_raw_event);
+        xQueueReceive(button_raw_event_queue, &button_raw_event, portMAX_DELAY);
+        button_raw_event_handler(button_raw_event);
     }
 }

@@ -5,7 +5,7 @@
 
 #define LED_PIN GPIO_NUM_5
 
-void task_blink(void *pvParameter)
+void task_heartbeat_led_blink(void *pvParameter)
 {
     gpio_set_direction(LED_PIN, GPIO_MODE_OUTPUT);
 

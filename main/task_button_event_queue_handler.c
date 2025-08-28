@@ -2,6 +2,7 @@
 #include "freertos/queue.h"
 #include "esp_log.h"
 #include "include/task_button_event_queue_handler.h"
+#include "include/task_respawn_counter_mode_handler.h"
 
 static const char *TAG = "task_button_event_queue_handler";
 
@@ -10,6 +11,9 @@ QueueHandle_t button_event_queue;
 void button_event_handler(button_event_t button_event)
 {
     ESP_LOGI(TAG, "GPIO %d was %s for %d ms", button_event.gpio_num, button_event.state == PRESSED ? "pressed" : "depressed", button_event.durationMS);
+
+    // TODO: Add mode select
+    respawn_mode_button_event_handler(button_event);
 }
 
 void task_button_event_queue_handler(void *pvParameter)
@@ -24,7 +28,7 @@ void task_button_event_queue_handler(void *pvParameter)
     button_event_t button_event;
     while (1)
     {
-        if (xQueueReceive(button_event_queue, &button_event, portMAX_DELAY))
-            button_event_handler(button_event);
+        xQueueReceive(button_event_queue, &button_event, portMAX_DELAY);
+        button_event_handler(button_event);
     }
 }
