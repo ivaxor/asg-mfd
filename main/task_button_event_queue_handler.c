@@ -7,30 +7,9 @@ static const char *TAG = "task_button_event_queue_handler";
 
 QueueHandle_t button_event_queue;
 
-static int64_t button_event_press_timestamps[27] = {0};
 void button_event_handler(button_event_t button_event)
 {
-    ESP_LOGI(TAG, "GPIO %d pressed state changed to %d", button_event.gpio_num, button_event.pressed);
-
-    int64_t lastPressTimestamp = button_event_press_timestamps[button_event.gpio_num];
-    switch (button_event.pressed)
-    {
-    case 0:
-        if (lastPressTimestamp == 0)
-            return;
-
-        button_event_press_timestamps[button_event.gpio_num] = 0;
-        int64_t pressTime = (button_event.timestamp - lastPressTimestamp) / 1000;
-        ESP_LOGI(TAG, "GPIO %d was pressed for %d ms", button_event.gpio_num, pressTime);
-        break;
-
-    case 1:
-        if (lastPressTimestamp != 0)
-            return;
-            
-        button_event_press_timestamps[button_event.gpio_num] = button_event.timestamp;
-        break;
-    }
+    ESP_LOGI(TAG, "GPIO %d was %s for %d ms", button_event.gpio_num, button_event.state == PRESSED ? "pressed" : "depressed", button_event.durationMS);
 }
 
 void task_button_event_queue_handler(void *pvParameter)

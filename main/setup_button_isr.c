@@ -5,7 +5,7 @@
 #include "esp_err.h"
 #include "esp_log.h"
 #include "esp_timer.h"
-#include "include/task_button_event_queue_handler.h"
+#include "include/task_button_raw_event_queue_handler.h"
 
 #define BUTTON_GPIO GPIO_NUM_0
 
@@ -13,13 +13,13 @@ void IRAM_ATTR button_isr_handler(void *arg)
 {
     uint32_t gpio_num = (uint32_t)arg;
 
-    button_event_t event;
+    button_raw_event_t button_raw_event;
 
-    event.gpio_num = gpio_num;
-    event.pressed = !gpio_get_level(gpio_num);
-    event.timestamp = esp_timer_get_time();
+    button_raw_event.gpio_num = gpio_num;
+    button_raw_event.pressed = !gpio_get_level(gpio_num);
+    button_raw_event.timestamp = esp_timer_get_time();
 
-    xQueueSendFromISR(button_event_queue, &event, NULL);
+    xQueueSendFromISR(button_raw_event_queue, &button_raw_event, NULL);
 }
 
 void setup_button_isr(void)

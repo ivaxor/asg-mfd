@@ -8,6 +8,7 @@
 #include "include/setup_webserver.h"
 #include "include/task_blink.h"
 #include "include/task_button_event_queue_handler.h"
+#include "include/task_button_raw_event_queue_handler.h"
 
 void app_main(void)
 {
@@ -16,4 +17,5 @@ void app_main(void)
 
     xTaskCreate(&task_blink, "task_blink", 2048, NULL, 5, NULL);
     xTaskCreate(&task_button_event_queue_handler, "task_button_event_queue_handler", 2048, NULL, 5, NULL);
+    xTaskCreate(&task_button_raw_event_queue_handler, "task_button_raw_event_queue_handler", 2048, NULL, 5, NULL);    
 }

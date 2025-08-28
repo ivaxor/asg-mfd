@@ -6,6 +6,7 @@ idf_component_register(
         "setup_webserver_static.c"
         "task_blink.c"
         "task_button_event_queue_handler.c"
+        "task_button_raw_event_queue_handler.c"
     REQUIRES
         "freertos"
         "driver"
