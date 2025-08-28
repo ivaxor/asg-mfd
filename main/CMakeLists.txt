@@ -1,9 +1,11 @@
 idf_component_register(
     SRCS
         "main.c"
+        "setup_button_isr.c"
         "setup_webserver.c"
         "setup_webserver_static.c"
         "task_blink.c"
+        "task_button_event_queue_handler.c"
     REQUIRES
         "freertos"
         "driver"

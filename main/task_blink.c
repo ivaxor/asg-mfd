@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "driver/gpio.h"
@@ -10,7 +9,7 @@ void task_blink(void *pvParameter)
 {
     gpio_set_direction(LED_PIN, GPIO_MODE_OUTPUT);
 
-    while (true)
+    while (1)
     {
         gpio_set_level(LED_PIN, 0);
         printf("LED is ON\n");
