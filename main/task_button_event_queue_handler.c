@@ -7,17 +7,10 @@
 static const char *TAG = "task_button_event_queue_handler";
 
 QueueHandle_t button_event_queue;
-
-void button_event_handler(button_event_t button_event)
-{
-    ESP_LOGI(TAG, "GPIO %d was %s for %d ms", button_event.gpio_num, button_event.state == PRESSED ? "pressed" : "depressed", button_event.durationMS);
-
-    // TODO: Add mode select
-    respawn_mode_button_event_handler(button_event);
-}
-
 void task_button_event_queue_handler(void *pvParameter)
 {
+    ESP_LOGI(TAG, "Starting task");
+
     button_event_queue = xQueueCreate(10, sizeof(button_event_t));
     if (button_event_queue == NULL)
     {
@@ -25,10 +18,15 @@ void task_button_event_queue_handler(void *pvParameter)
         return;
     }
 
+    ESP_LOGI(TAG, "Task setup complete");
+
     button_event_t button_event;
     while (1)
     {
         xQueueReceive(button_event_queue, &button_event, portMAX_DELAY);
-        button_event_handler(button_event);
+        ESP_LOGI(TAG, "Button event received. GPIO %d. Pressed: %s. Duration: %d ms", button_event.gpio_num, button_event.state, button_event.durationMS);
+
+        // TODO: Add mode select
+        respawn_mode_button_event_handler(button_event);
     }
 }

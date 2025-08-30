@@ -7,7 +7,7 @@
 #include "include/task_respawn_counter_mode_handler.h"
 #include "include/task_buzzer_event_queue_handler.h"
 
-#define RESPAWN_BUTTON_LED_PIN GPIO_NUM_6
+#define RESPAWN_BUTTON_LED_PIN GPIO_NUM_2
 
 static const char *TAG = "task_respawn_counter_mode_handler";
 
@@ -85,6 +85,8 @@ void setup_mode_long_press(void)
 
 void respawn_mode_button_event_handler(button_event_t button_event)
 {
+    ESP_LOGI(TAG, "Button event received. GPIO: %d. State: %d. Duration: %d ms", button_event.gpio_num, button_event.state, button_event.durationMS);
+
     if (button_event.state != DEPRESSED)
         return;
 
@@ -110,10 +112,13 @@ void respawn_mode_button_event_handler(button_event_t button_event)
 
 void task_respawn_counter_mode_handler(void *pvParameter)
 {
-    bool respawn_button_led = false;
+    ESP_LOGI(TAG, "Starting task");
 
+    bool respawn_button_led = false;
     gpio_set_direction(RESPAWN_BUTTON_LED_PIN, GPIO_MODE_OUTPUT);
     gpio_set_level(RESPAWN_BUTTON_LED_PIN, respawn_button_led);
+
+    ESP_LOGI(TAG, "Task setup complete");
 
     while (1)
     {
