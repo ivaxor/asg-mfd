@@ -5,10 +5,8 @@
 #include "esp_log.h"
 #include "include/task_buzzer_event_queue_handler.h"
 
-static const char *TAG = "task_buzzer_event_queue_handler";
-
 #define BUZZER_PIN GPIO_NUM_4
-
+static const char *TAG = "task_buzzer_event_queue_handler";
 QueueHandle_t buzzer_event_queue;
 
 void task_buzzer_event_queue_handler(void *pvParameter)
@@ -32,7 +30,7 @@ void task_buzzer_event_queue_handler(void *pvParameter)
     {
         xQueueReceive(buzzer_event_queue, &beep_type, portMAX_DELAY);
     new_beep:
-        ESP_LOGI(TAG, "Buzzer event received. Type: %d", beep_type);
+        ESP_LOGI(TAG, "Buzzer event received. Type: %u", beep_type);
 
         switch (beep_type)
         {
@@ -46,8 +44,8 @@ void task_buzzer_event_queue_handler(void *pvParameter)
                 goto new_beep;
             break;
 
-        case RESPAWN_TOKEN_DECREASE:
-            ESP_LOGI(TAG, "Playing RESPAWN_TOKEN_DECREASE");
+        case RESPAWN_TOKEN_DECREMENT:
+            ESP_LOGI(TAG, "Playing RESPAWN_TOKEN_DECREMENT");
             gpio_set_level(BUZZER_PIN, 1);
             if (xQueueReceive(buzzer_event_queue, &beep_type, pdMS_TO_TICKS(300)) == pdTRUE)
                 goto new_beep;
@@ -78,6 +76,19 @@ void task_buzzer_event_queue_handler(void *pvParameter)
                     goto new_beep;
                 gpio_set_level(BUZZER_PIN, 0);
                 if (xQueueReceive(buzzer_event_queue, &beep_type, pdMS_TO_TICKS(300 - (100 * i))) == pdTRUE)
+                    goto new_beep;
+            }
+            break;
+
+            case RESPAWN_SETUP_MODE_DISABLED:
+            ESP_LOGI(TAG, "Playing RESPAWN_SETUP_MODE_DISABLED");
+            for (uint8_t i = 0; i < 3; i++)
+            {
+                gpio_set_level(BUZZER_PIN, 1);
+                if (xQueueReceive(buzzer_event_queue, &beep_type, pdMS_TO_TICKS(100 + (100 * i))) == pdTRUE)
+                    goto new_beep;
+                gpio_set_level(BUZZER_PIN, 0);
+                if (xQueueReceive(buzzer_event_queue, &beep_type, pdMS_TO_TICKS(100 + (100 * i))) == pdTRUE)
                     goto new_beep;
             }
             break;

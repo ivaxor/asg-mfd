@@ -6,9 +6,10 @@
 typedef enum
 {
     RESPAWN_NO_TOKENS,
-    RESPAWN_TOKEN_DECREASE,
+    RESPAWN_TOKEN_DECREMENT,
     RESPAWN_BATCH,
     RESPAWN_SETUP_MODE_ENABLED,
+    RESPAWN_SETUP_MODE_DISABLED,
 } BEEP_TYPE;
 
 extern QueueHandle_t buzzer_event_queue;

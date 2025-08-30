@@ -5,15 +5,15 @@
 
 typedef enum
 {
-    PRESSED,
     DEPRESSED,
+    PRESSED,    
 } BUTTON_EVENT_STATE;
 
 typedef struct
 {
-    uint32_t gpio_num;
+    uint8_t gpio_num;
     BUTTON_EVENT_STATE state;
-    int64_t durationMS;
+    int64_t duration;
 } button_event_t;
 
 extern QueueHandle_t button_event_queue;

@@ -22,10 +22,10 @@ void app_main(void)
     ESP_LOGI(TAG, "Application setup completed");
 
     ESP_LOGI(TAG, "Starting application tasks");
-    xTaskCreate(&task_button_event_queue_handler, "task_button_event_queue_handler", 2048, NULL, 5, NULL);
-    xTaskCreate(&task_button_raw_event_queue_handler, "task_button_raw_event_queue_handler", 2048, NULL, 5, NULL);
-    xTaskCreate(&task_buzzer_event_queue_handler, "task_buzzer_event_queue_handler", 2048, NULL, 5, NULL);
-    xTaskCreate(&task_heartbeat_led_blink, "task_heartbeat_led_blink", 2048, NULL, 5, NULL);
-    xTaskCreate(&task_respawn_counter_mode_handler, "task_respawn_counter_mode_handler", 2048, NULL, 5, NULL);
+    xTaskCreate(&task_button_event_queue_handler, "task_button_event_queue_handler", 4096, NULL, 5, NULL);
+    xTaskCreate(&task_button_raw_event_queue_handler, "task_button_raw_event_queue_handler", 4096, NULL, 5, NULL);
+    xTaskCreate(&task_buzzer_event_queue_handler, "task_buzzer_event_queue_handler", 4096, NULL, 5, NULL);
+    xTaskCreate(&task_heartbeat_led_blink, "task_heartbeat_led_blink", 4096, NULL, 5, NULL);
+    xTaskCreate(&task_respawn_counter_mode_handler, "task_respawn_counter_mode_handler", 4096, NULL, 5, NULL);
     ESP_LOGI(TAG, "Application tasks started");
 }

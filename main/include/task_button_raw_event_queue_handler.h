@@ -4,7 +4,7 @@
 #define TASK_BUTTON_RAW_EVENT_QUEUE_HANDLER_H
 
 typedef struct {
-    uint32_t gpio_num;
+    uint8_t gpio_num;
     bool pressed;
     int64_t timestamp;
 } button_raw_event_t;

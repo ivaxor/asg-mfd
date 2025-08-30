@@ -5,8 +5,8 @@
 #include "include/task_respawn_counter_mode_handler.h"
 
 static const char *TAG = "task_button_event_queue_handler";
-
 QueueHandle_t button_event_queue;
+
 void task_button_event_queue_handler(void *pvParameter)
 {
     ESP_LOGI(TAG, "Starting task");
@@ -24,7 +24,7 @@ void task_button_event_queue_handler(void *pvParameter)
     while (1)
     {
         xQueueReceive(button_event_queue, &button_event, portMAX_DELAY);
-        ESP_LOGI(TAG, "Button event received. GPIO %d. Pressed: %s. Duration: %d ms", button_event.gpio_num, button_event.state, button_event.durationMS);
+        ESP_LOGI(TAG, "Button event received. GPIO %u. State: %u. Duration: %lli ms", button_event.gpio_num, button_event.state, button_event.duration / 1000);
 
         // TODO: Add mode select
         respawn_mode_button_event_handler(button_event);
