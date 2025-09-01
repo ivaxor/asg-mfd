@@ -20,11 +20,9 @@ private:
 public:
     void init();
     void task(void *pvParameter);
-
     void handle_button_event(button_event_t button_event);
-
-    respawn_counter_info_t *get();
-    void replace(respawn_counter_info_t *new_info);
+    respawn_counter_info_t get();
+    void replace(respawn_counter_info_t new_info);
 };
 
 extern respawn_counter_service_t respawn_counter_service;

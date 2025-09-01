@@ -10,6 +10,7 @@
 #include "dns_server.h"
 #include "include/webserver_service_t.h"
 #include "include/webserver_static_handlers_t.h"
+#include "include/webserver_respawn_counter_handlers_t.h"
 
 webserver_service_t webserver_service;
 
@@ -100,7 +101,8 @@ httpd_handle_t webserver_service_t::start_webserver()
         httpd_register_uri_handler(server, &webserver_static_handlers_t::styles_css_uri);
         httpd_register_uri_handler(server, &webserver_static_handlers_t::favicon_ico_uri);
 
-        // httpd_register_uri_handler(server, &api_info_uri);
+        httpd_register_uri_handler(server, &webserver_respawn_counter_handlers_t::respawn_counter_info_get_uri);
+        httpd_register_uri_handler(server, &webserver_respawn_counter_handlers_t::respawn_counter_info_post_uri);
 
         httpd_register_err_handler(server, HTTPD_404_NOT_FOUND, webserver_static_handlers_t::http_404_error_handler);
     }

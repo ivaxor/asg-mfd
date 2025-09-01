@@ -17,6 +17,7 @@ typedef struct
     uint16_t respawn_tokens;
     uint16_t current_respawn_tokens;
     respawn_counter_policy_t *policies;
+    uint8_t policies_length;
 } respawn_counter_info_t;
 
 #endif // RESPAWN_COUNTER_INFO_H

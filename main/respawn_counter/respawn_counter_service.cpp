@@ -6,7 +6,6 @@
 #include "include/respawn_counter_info_t.h"
 #include "include/respawn_counter_service_t.h"
 #include "../buzzer/include/buzzer_event_queue_handler_t.h"
-#include "../button/include/button_event_t.h"
 
 #define RESPAWN_BUTTON_LED_PIN GPIO_NUM_2
 
@@ -18,7 +17,8 @@ void respawn_counter_service_t::init()
 
     info.respawn_tokens = 0;
     info.current_respawn_tokens = 0;
-    info.policies = NULL;
+    info.policies = new respawn_counter_policy_t[0];
+    info.policies_length = 0;
 
     gpio_set_direction(RESPAWN_BUTTON_LED_PIN, GPIO_MODE_OUTPUT);
 }
@@ -94,26 +94,22 @@ void respawn_counter_service_t::short_press()
     ESP_LOGI(TAG, "Respawn token decremented. Tokens: %lu", info.current_respawn_tokens);
 
     bool respawn_batch = true;
-    /*
-    for (uint8_t i = 0; i < 10; i++)
+
+    for (uint8_t i = 0; i < info.policies_length; i++)
     {
-        // TODO: Implement respawn policy sort
-        respawn_policy_t policy = info.policies[i];
-
-        if (policy.enabled == false)
+        if (info.policies[i].enabled == false)
             continue;
 
-        if (info.current_respawn_tokens > policy.min)
+        if (info.current_respawn_tokens > info.policies[i].min)
             continue;
 
-        if (info.current_respawn_tokens < policy.max)
+        if (info.current_respawn_tokens < info.policies[i].max)
             continue;
 
-        ESP_LOGI(TAG, "Using respawn policy. Priority: %u. Min: %lu. Max: %lu. Batch size: %lu", policy.priority, policy.min, policy.max, policy.batch_size);
+        ESP_LOGI(TAG, "Using respawn policy. Priority: %u. Min: %lu. Max: %lu. Batch size: %lu", info.policies[i].priority, info.policies[i].min, info.policies[i].max, info.policies[i].batch_size);
 
-        respawn_batch = info.current_respawn_tokens % policy.batch_size == 0;
+        respawn_batch = info.current_respawn_tokens % info.policies[i].batch_size == 0;
     }
-    */
 
     if (respawn_batch == true)
     {
@@ -155,16 +151,13 @@ void respawn_counter_service_t::setup_mode_long_press()
     setup_mode = false;
 }
 
-respawn_counter_info_t *respawn_counter_service_t::get()
+respawn_counter_info_t respawn_counter_service_t::get()
 {
-    return &info;
+    return info;
 }
 
-void respawn_counter_service_t::replace(respawn_counter_info_t *new_info)
+void respawn_counter_service_t::replace(respawn_counter_info_t new_info)
 {
-    if (info.policies != NULL)
-        free((void *)info.policies);
-
-    info.respawn_tokens = new_info->respawn_tokens;
-    info.policies = new_info->policies;
+    delete[] info.policies;
+    info = new_info;
 }
