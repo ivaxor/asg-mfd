@@ -3,32 +3,40 @@
 #include "freertos/queue.h"
 #include "driver/gpio.h"
 #include "esp_log.h"
-#include "include/task_buzzer_event_queue_handler.h"
+#include "include/buzzer_event_queue_handler_t.h"
 
 #define BUZZER_PIN GPIO_NUM_4
-static const char *TAG = "task_buzzer_event_queue_handler";
-QueueHandle_t buzzer_event_queue;
 
-void task_buzzer_event_queue_handler(void *pvParameter)
+buzzer_event_queue_handler_t buzzer_event_queue_handler;
+
+void buzzer_event_queue_handler_t::init()
 {
-    ESP_LOGI(TAG, "Starting task");
-
     gpio_set_direction(BUZZER_PIN, GPIO_MODE_OUTPUT);
     gpio_set_level(BUZZER_PIN, 0);
 
-    buzzer_event_queue = xQueueCreate(10, sizeof(BEEP_TYPE));
-    if (buzzer_event_queue == NULL)
+    queue = xQueueCreate(10, sizeof(BUZZER_BEEP_TYPE));
+    if (queue == NULL)
     {
         ESP_LOGE(TAG, "Failed to create buzzer event queue");
         return;
     }
+}
 
-    ESP_LOGI(TAG, "Task setup complete");
+void buzzer_event_queue_handler_t::add_to_queue(BUZZER_BEEP_TYPE beep_type)
+{
+    if (xQueueSend(queue, &beep_type, 0) != pdTRUE)
+    {
+        ESP_LOGE(TAG, "Failed to send buzzer event to queue");
+        return;
+    }
+}
 
-    BEEP_TYPE beep_type;
+void buzzer_event_queue_handler_t::task(void *pvParameter)
+{
+    BUZZER_BEEP_TYPE beep_type;
     while (1)
     {
-        xQueueReceive(buzzer_event_queue, &beep_type, portMAX_DELAY);
+        xQueueReceive(queue, &beep_type, portMAX_DELAY);
     new_beep:
         ESP_LOGI(TAG, "Buzzer event received. Type: %u", beep_type);
 
@@ -37,20 +45,20 @@ void task_buzzer_event_queue_handler(void *pvParameter)
         case RESPAWN_NO_TOKENS:
             ESP_LOGI(TAG, "Playing RESPAWN_NO_TOKENS");
             gpio_set_level(BUZZER_PIN, 1);
-            if (xQueueReceive(buzzer_event_queue, &beep_type, pdMS_TO_TICKS(2000)) == pdTRUE)
+            if (xQueueReceive(queue, &beep_type, pdMS_TO_TICKS(2000)) == pdTRUE)
                 goto new_beep;
             gpio_set_level(BUZZER_PIN, 0);
-            if (xQueueReceive(buzzer_event_queue, &beep_type, pdMS_TO_TICKS(2000)) == pdTRUE)
+            if (xQueueReceive(queue, &beep_type, pdMS_TO_TICKS(2000)) == pdTRUE)
                 goto new_beep;
             break;
 
         case RESPAWN_TOKEN_DECREMENT:
             ESP_LOGI(TAG, "Playing RESPAWN_TOKEN_DECREMENT");
             gpio_set_level(BUZZER_PIN, 1);
-            if (xQueueReceive(buzzer_event_queue, &beep_type, pdMS_TO_TICKS(300)) == pdTRUE)
+            if (xQueueReceive(queue, &beep_type, pdMS_TO_TICKS(300)) == pdTRUE)
                 goto new_beep;
             gpio_set_level(BUZZER_PIN, 0);
-            if (xQueueReceive(buzzer_event_queue, &beep_type, pdMS_TO_TICKS(300)) == pdTRUE)
+            if (xQueueReceive(queue, &beep_type, pdMS_TO_TICKS(300)) == pdTRUE)
                 goto new_beep;
             break;
 
@@ -59,10 +67,10 @@ void task_buzzer_event_queue_handler(void *pvParameter)
             for (uint8_t i = 0; i < 3; i++)
             {
                 gpio_set_level(BUZZER_PIN, 1);
-                if (xQueueReceive(buzzer_event_queue, &beep_type, pdMS_TO_TICKS(300)) == pdTRUE)
+                if (xQueueReceive(queue, &beep_type, pdMS_TO_TICKS(300)) == pdTRUE)
                     goto new_beep;
                 gpio_set_level(BUZZER_PIN, 0);
-                if (xQueueReceive(buzzer_event_queue, &beep_type, pdMS_TO_TICKS(300)) == pdTRUE)
+                if (xQueueReceive(queue, &beep_type, pdMS_TO_TICKS(300)) == pdTRUE)
                     goto new_beep;
             }
             break;
@@ -72,23 +80,23 @@ void task_buzzer_event_queue_handler(void *pvParameter)
             for (uint8_t i = 0; i < 3; i++)
             {
                 gpio_set_level(BUZZER_PIN, 1);
-                if (xQueueReceive(buzzer_event_queue, &beep_type, pdMS_TO_TICKS(300 - (100 * i))) == pdTRUE)
+                if (xQueueReceive(queue, &beep_type, pdMS_TO_TICKS(300 - (100 * i))) == pdTRUE)
                     goto new_beep;
                 gpio_set_level(BUZZER_PIN, 0);
-                if (xQueueReceive(buzzer_event_queue, &beep_type, pdMS_TO_TICKS(300 - (100 * i))) == pdTRUE)
+                if (xQueueReceive(queue, &beep_type, pdMS_TO_TICKS(300 - (100 * i))) == pdTRUE)
                     goto new_beep;
             }
             break;
 
-            case RESPAWN_SETUP_MODE_DISABLED:
+        case RESPAWN_SETUP_MODE_DISABLED:
             ESP_LOGI(TAG, "Playing RESPAWN_SETUP_MODE_DISABLED");
             for (uint8_t i = 0; i < 3; i++)
             {
                 gpio_set_level(BUZZER_PIN, 1);
-                if (xQueueReceive(buzzer_event_queue, &beep_type, pdMS_TO_TICKS(100 + (100 * i))) == pdTRUE)
+                if (xQueueReceive(queue, &beep_type, pdMS_TO_TICKS(100 + (100 * i))) == pdTRUE)
                     goto new_beep;
                 gpio_set_level(BUZZER_PIN, 0);
-                if (xQueueReceive(buzzer_event_queue, &beep_type, pdMS_TO_TICKS(100 + (100 * i))) == pdTRUE)
+                if (xQueueReceive(queue, &beep_type, pdMS_TO_TICKS(100 + (100 * i))) == pdTRUE)
                     goto new_beep;
             }
             break;

@@ -5,13 +5,16 @@
 #include "esp_err.h"
 #include "esp_log.h"
 #include "esp_timer.h"
-#include "include/task_button_raw_event_queue_handler.h"
+#include "include/button_isr_handler_t.h"
+#include "include/button_raw_event_queue_handler_t.h"
 
-#define BUTTON_GPIO GPIO_NUM_0
+#define RESPAWN_BUTTON_GPIO GPIO_NUM_0
 
-void IRAM_ATTR button_isr_handler(void *arg)
+button_isr_handler_t button_isr_handler;
+
+void IRAM_ATTR button_isr_handler_t::handler(void *arg)
 {
-    uint32_t gpio_num = (uint32_t)arg;
+    gpio_num_t gpio_num = static_cast<gpio_num_t>(reinterpret_cast<int>(arg));
 
     button_raw_event_t button_raw_event;
 
@@ -19,20 +22,20 @@ void IRAM_ATTR button_isr_handler(void *arg)
     button_raw_event.pressed = !gpio_get_level(gpio_num);
     button_raw_event.timestamp = esp_timer_get_time();
 
-    xQueueSendFromISR(button_raw_event_queue, &button_raw_event, NULL);
+    button_raw_event_queue_handler.add_to_queue_isr(&button_raw_event);
 }
 
-void setup_button_isr(void)
+void button_isr_handler_t::init()
 {
     gpio_config_t io_config = {
-        .intr_type = GPIO_INTR_ANYEDGE,
+        .pin_bit_mask = (1ULL << RESPAWN_BUTTON_GPIO),
         .mode = GPIO_MODE_INPUT,
         .pull_up_en = GPIO_PULLUP_ENABLE,
         .pull_down_en = GPIO_PULLDOWN_DISABLE,
-        .pin_bit_mask = (1ULL << BUTTON_GPIO),
+        .intr_type = GPIO_INTR_ANYEDGE,
     };
     ESP_ERROR_CHECK(gpio_config(&io_config));
 
     ESP_ERROR_CHECK(gpio_install_isr_service(0));
-    ESP_ERROR_CHECK(gpio_isr_handler_add(BUTTON_GPIO, button_isr_handler, (void *)BUTTON_GPIO));
+    ESP_ERROR_CHECK(gpio_isr_handler_add(RESPAWN_BUTTON_GPIO, button_isr_handler_t::handler, (void *)RESPAWN_BUTTON_GPIO));
 }

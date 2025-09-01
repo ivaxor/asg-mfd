@@ -8,45 +8,25 @@
 #include "esp_netif.h"
 #include "esp_http_server.h"
 #include "dns_server.h"
-#include "cJSON.h"
-#include "include/setup_webserver_static.h"
+#include "include/webserver_service_t.h"
+#include "include/webserver_static_handlers_t.h"
 
-static const char *TAG = "setup_webserver";
+webserver_service_t webserver_service;
 
-// HTTP Error (404) Handler - Redirects all requests to the root page
-esp_err_t http_404_error_handler(httpd_req_t *req, httpd_err_code_t err)
-{
-    // Set status
-    httpd_resp_set_status(req, "302 Temporary Redirect");
-    // Redirect to the "/" root directory
-    httpd_resp_set_hdr(req, "Location", "/");
-    // iOS requires content in the response to detect a captive portal, simply redirecting is not sufficient.
-    httpd_resp_send(req, "Redirect to the captive portal", HTTPD_RESP_USE_STRLEN);
-
-    ESP_LOGI(TAG, "Redirecting to root");
-    return ESP_OK;
-}
-
-static void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
+void webserver_service_t::wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
 {
     if (event_id == WIFI_EVENT_AP_STACONNECTED)
-    {
         wifi_event_ap_staconnected_t *event = (wifi_event_ap_staconnected_t *)event_data;
-        ESP_LOGI(TAG, "station " MACSTR " join, AID=%d", MAC2STR(event->mac), event->aid);
-    }
     else if (event_id == WIFI_EVENT_AP_STADISCONNECTED)
-    {
         wifi_event_ap_stadisconnected_t *event = (wifi_event_ap_stadisconnected_t *)event_data;
-        ESP_LOGI(TAG, "station " MACSTR " leave, AID=%d, reason=%d", MAC2STR(event->mac), event->aid, event->reason);
-    }
 }
 
-static void wifi_init_softap(void)
+void webserver_service_t::wifi_init_softap()
 {
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 
-    ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler, NULL));
+    ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &webserver_service_t::wifi_event_handler, NULL));
 
     uint8_t mac_addr[6];
     char ap_ssid[32];
@@ -56,15 +36,16 @@ static void wifi_init_softap(void)
     wifi_config_t wifi_config = {
         .ap = {
             .ssid = "",
-            .ssid_len = strlen(ap_ssid),
             .password = "",
+            .ssid_len = (uint8_t)strlen(ap_ssid),
+            .authmode = WIFI_AUTH_OPEN,
             .max_connection = 4,
-            .authmode = WIFI_AUTH_OPEN},
+        },
     };
     memcpy(wifi_config.ap.ssid, ap_ssid, sizeof(ap_ssid));
 
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_AP));
-    ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_AP, &wifi_config));
+    ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &wifi_config));
     ESP_ERROR_CHECK(esp_wifi_start());
 
     esp_netif_ip_info_t ip_info;
@@ -77,7 +58,7 @@ static void wifi_init_softap(void)
     ESP_LOGI(TAG, "wifi_init_softap finished. SSID:'%s'", ap_ssid);
 }
 
-static void dhcp_set_captiveportal_url(void)
+void webserver_service_t::dhcp_set_captiveportal_url()
 {
     // get the IP of the access point to redirect to
     esp_netif_ip_info_t ip_info;
@@ -102,31 +83,31 @@ static void dhcp_set_captiveportal_url(void)
     ESP_ERROR_CHECK_WITHOUT_ABORT(esp_netif_dhcps_start(netif));
 }
 
-static httpd_handle_t start_webserver(void)
+httpd_handle_t webserver_service_t::start_webserver()
 {
     httpd_handle_t server = NULL;
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
     config.lru_purge_enable = true;
 
     // Start the httpd server
-    ESP_LOGI(TAG, "Starting server on port: '%d'", config.server_port);
+    ESP_LOGI(TAG, "Starting server on port: '%lu'", config.server_port);
     if (httpd_start(&server, &config) == ESP_OK)
     {
         // Set URI handlers
         ESP_LOGI(TAG, "Registering URI handlers");
-        httpd_register_uri_handler(server, &index_html_uri);
-        httpd_register_uri_handler(server, &main_js_uri);
-        httpd_register_uri_handler(server, &styles_css_uri);
-        httpd_register_uri_handler(server, &favicon_ico_uri);
-        
-        httpd_register_uri_handler(server, &api_info_uri);
+        httpd_register_uri_handler(server, &webserver_static_handlers_t::index_html_uri);
+        httpd_register_uri_handler(server, &webserver_static_handlers_t::main_js_uri);
+        httpd_register_uri_handler(server, &webserver_static_handlers_t::styles_css_uri);
+        httpd_register_uri_handler(server, &webserver_static_handlers_t::favicon_ico_uri);
 
-        httpd_register_err_handler(server, HTTPD_404_NOT_FOUND, http_404_error_handler);
+        // httpd_register_uri_handler(server, &api_info_uri);
+
+        httpd_register_err_handler(server, HTTPD_404_NOT_FOUND, webserver_static_handlers_t::http_404_error_handler);
     }
     return server;
 }
 
-void setup_webserver(void)
+void webserver_service_t::init()
 {
     /*
         Turn of warnings from HTTP server as redirecting traffic will yield

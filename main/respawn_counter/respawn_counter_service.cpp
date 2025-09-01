@@ -1,0 +1,170 @@
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "driver/gpio.h"
+#include "esp_log.h"
+#include "esp_err.h"
+#include "include/respawn_counter_info_t.h"
+#include "include/respawn_counter_service_t.h"
+#include "../buzzer/include/buzzer_event_queue_handler_t.h"
+#include "../button/include/button_event_t.h"
+
+#define RESPAWN_BUTTON_LED_PIN GPIO_NUM_2
+
+respawn_counter_service_t respawn_counter_service;
+
+void respawn_counter_service_t::init()
+{
+    setup_mode = false;
+
+    info.respawn_tokens = 0;
+    info.current_respawn_tokens = 0;
+    info.policies = NULL;
+
+    gpio_set_direction(RESPAWN_BUTTON_LED_PIN, GPIO_MODE_OUTPUT);
+}
+
+void respawn_counter_service_t::task(void *pvParameter)
+{
+    bool respawn_button_led = false;
+
+    while (1)
+    {
+        if (info.current_respawn_tokens == 0)
+        {
+            if (respawn_button_led != false)
+            {
+                respawn_button_led = !respawn_button_led;
+                gpio_set_level(RESPAWN_BUTTON_LED_PIN, respawn_button_led);
+            }
+
+            // TODO: Find a more elegant way to do nothing, but not cancel task
+            vTaskDelay(pdMS_TO_TICKS(1000));
+            continue;
+        }
+
+        respawn_button_led = !respawn_button_led;
+        gpio_set_level(RESPAWN_BUTTON_LED_PIN, respawn_button_led);
+        vTaskDelay(pdMS_TO_TICKS(setup_mode == true ? 250 : 1000));
+    }
+}
+
+void respawn_counter_service_t::handle_button_event(button_event_t button_event)
+{
+    ESP_LOGI(TAG, "Button event received. GPIO: %u. State: %u. Duration: %lli ms", button_event.gpio_num, button_event.state, button_event.duration / 1000);
+
+    if (button_event.state != DEPRESSED)
+        return;
+
+    switch (setup_mode)
+    {
+    case false:
+        // 1 sec
+        if (button_event.duration < 1000000)
+            short_press();
+
+        // 10 sec
+        if (button_event.duration > 10000000)
+            long_press();
+        break;
+
+    case true:
+        // 1 sec
+        if (button_event.duration < 1000000)
+            setup_mode_short_press();
+
+        // 5 sec
+        if (button_event.duration > 5000000)
+            setup_mode_long_press();
+        break;
+    }
+}
+
+void respawn_counter_service_t::short_press()
+{
+    ESP_LOGI(TAG, "Short press");
+
+    if (info.current_respawn_tokens == 0)
+    {
+        ESP_LOGI(TAG, "No respawn token left");
+        buzzer_event_queue_handler.add_to_queue(RESPAWN_NO_TOKENS);
+        return;
+    }
+
+    info.current_respawn_tokens--;
+    ESP_LOGI(TAG, "Respawn token decremented. Tokens: %lu", info.current_respawn_tokens);
+
+    bool respawn_batch = true;
+    /*
+    for (uint8_t i = 0; i < 10; i++)
+    {
+        // TODO: Implement respawn policy sort
+        respawn_policy_t policy = info.policies[i];
+
+        if (policy.enabled == false)
+            continue;
+
+        if (info.current_respawn_tokens > policy.min)
+            continue;
+
+        if (info.current_respawn_tokens < policy.max)
+            continue;
+
+        ESP_LOGI(TAG, "Using respawn policy. Priority: %u. Min: %lu. Max: %lu. Batch size: %lu", policy.priority, policy.min, policy.max, policy.batch_size);
+
+        respawn_batch = info.current_respawn_tokens % policy.batch_size == 0;
+    }
+    */
+
+    if (respawn_batch == true)
+    {
+        ESP_LOGI(TAG, "Batch respawn");
+        buzzer_event_queue_handler.add_to_queue(RESPAWN_BATCH);
+    }
+    else
+    {
+        ESP_LOGI(TAG, "Waiting for batch respawn");
+        buzzer_event_queue_handler.add_to_queue(RESPAWN_TOKEN_DECREMENT);
+    }
+
+    // TODO: Update matrix display with respawn_tokens
+}
+
+void respawn_counter_service_t::long_press()
+{
+    ESP_LOGI(TAG, "Setup mode enable");
+
+    buzzer_event_queue_handler.add_to_queue(RESPAWN_SETUP_MODE_ENABLED);
+    setup_mode = true;
+
+    // TODO: Implement
+}
+
+void respawn_counter_service_t::setup_mode_short_press()
+{
+    ESP_LOGI(TAG, "Setup mode short press");
+
+    // TODO: Implement
+}
+
+void respawn_counter_service_t::setup_mode_long_press()
+{
+    ESP_LOGI(TAG, "Setup mode long press");
+
+    // TODO: Implement
+
+    setup_mode = false;
+}
+
+respawn_counter_info_t *respawn_counter_service_t::get()
+{
+    return &info;
+}
+
+void respawn_counter_service_t::replace(respawn_counter_info_t *new_info)
+{
+    if (info.policies != NULL)
+        free((void *)info.policies);
+
+    info.respawn_tokens = new_info->respawn_tokens;
+    info.policies = new_info->policies;
+}
