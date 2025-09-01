@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { RespawnCounterPolicy } from '../respawn-counter-policy';
-import { RespawnCounterPolicyService } from '../respawn-counter-policy-service';
+import { RespawnCounterInfo } from '../respawn-counter-info';
+import { RespawnCounterService } from '../respawn-counter-service';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -10,11 +10,11 @@ import { CommonModule } from '@angular/common';
   styleUrl: './respawn-counter-policies.scss'
 })
 export class RespawnCounterPolicies implements OnInit {
-  private service = inject(RespawnCounterPolicyService);
+  private respawnCounterService = inject(RespawnCounterService);
 
-  policies: RespawnCounterPolicy[] | undefined = undefined;  
+  info: RespawnCounterInfo | undefined = undefined;  
 
   ngOnInit(): void {
-    this.service.get().subscribe(p => this.policies = p);
+    this.respawnCounterService.get().subscribe(i => this.info = i);
   }
 }

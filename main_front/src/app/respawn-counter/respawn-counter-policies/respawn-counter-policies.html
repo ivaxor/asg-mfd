@@ -11,7 +11,7 @@
         </thead>
         
         <tbody>
-            <tr *ngIf="policies === undefined" class="placeholder-wave">
+            <tr *ngIf="info === undefined" class="placeholder-wave">
                 <th scope="row"><span class="placeholder col-12"></span></th>
                 <td><span class="placeholder col-12"></span></td>
                 <td><span class="placeholder col-12"></span></td>
@@ -19,7 +19,7 @@
                 <td><span class="placeholder col-12"></span></td>
             </tr>
 
-            <tr *ngFor="let policy of policies">
+            <tr *ngFor="let policy of info?.policies">
                 <th scope="row">{{policy.priority}}</th>
                 <td>{{policy.min}}</td>
                 <td>{{policy.max}}</td>
