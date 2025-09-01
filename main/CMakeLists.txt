@@ -5,6 +5,7 @@ idf_component_register(
         "button/button_isr_handler_t.cpp"
         "button/button_raw_event_queue_handler_t.cpp"
         "buzzer/buzzer_event_queue_handler_t.cpp"
+        "game_mode/game_mode_service_t.cpp"
         "led/led_heartbeat_service_t.cpp"
         "respawn_counter/respawn_counter_service.cpp"
         "webserver/webserver_respawn_counter_handlers_t.cpp"
