@@ -7,7 +7,7 @@ idf_component_register(
         "buzzer/buzzer_event_queue_handler_t.cpp"
         "game_mode/game_mode_service_t.cpp"
         "led/led_heartbeat_service_t.cpp"
-        #"matrix_display/matrix_display_service_t.cpp"
+        "matrix_display/matrix_display_service_t.cpp"
         "respawn_counter/respawn_counter_service.cpp"
         "webserver/webserver_respawn_counter_handlers_t.cpp"
         "webserver/webserver_service_t.cpp"
@@ -23,6 +23,7 @@ idf_component_register(
         "esp_http_server"
         "dns_server"
         "led_strip"
+        "max7219"
     EMBED_FILES
         "dist/browser/favicon.ico"
         "dist/browser/index.html"

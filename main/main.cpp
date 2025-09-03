@@ -9,7 +9,7 @@
 #include "button/include/button_raw_event_queue_handler_t.h"
 #include "buzzer/include/buzzer_event_queue_handler_t.h"
 #include "led/include/led_heartbeat_service_t.h"
-//#include "matrix_display/include/matrix_display_service_t.h"
+#include "matrix_display/include/matrix_display_service_t.h"
 #include "respawn_counter/include/respawn_counter_service_t.h"
 #include "webserver/include/webserver_service_t.h"
 
@@ -23,7 +23,7 @@ extern "C" void app_main(void)
     button_raw_event_queue_handler.init();
     buzzer_event_queue_handler.init();
     led_heartbeat_service.init();
-    //matrix_display_service.init();
+    matrix_display_service.init();
     webserver_service.init();
     respawn_counter_service.init();
     ESP_LOGI(TAG, "Application setup completed");
