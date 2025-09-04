@@ -12,6 +12,8 @@
 #include "include/webserver_static_handlers_t.h"
 #include "include/webserver_respawn_counter_handlers_t.h"
 
+const char *webserver_service_t::TAG = "webserver_service_t";
+
 webserver_service_t webserver_service;
 
 void webserver_service_t::wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data)

@@ -4,6 +4,9 @@
 #include "include/button_event_queue_handler_t.h"
 #include "../respawn_counter/include/respawn_counter_service_t.h"
 
+const char *button_event_queue_handler_t::TAG = "button_event_queue_handler_t";
+QueueHandle_t button_event_queue_handler_t::queue;
+
 button_event_queue_handler_t button_event_queue_handler;
 
 void button_event_queue_handler_t::init()

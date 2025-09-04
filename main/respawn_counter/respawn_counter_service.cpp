@@ -6,8 +6,14 @@
 #include "include/respawn_counter_info_t.h"
 #include "include/respawn_counter_service_t.h"
 #include "../buzzer/include/buzzer_event_queue_handler_t.h"
+#include "../matrix_display/include/matrix_display_service_t.h"
 
 #define RESPAWN_BUTTON_LED_PIN GPIO_NUM_2
+
+const char *respawn_counter_service_t::TAG = "respawn_counter_service_t";
+bool respawn_counter_service_t::setup_mode;
+uint8_t respawn_counter_service_t::setup_mode_menu;
+respawn_counter_info_t respawn_counter_service_t::info;
 
 respawn_counter_service_t respawn_counter_service;
 
@@ -16,7 +22,7 @@ void respawn_counter_service_t::init()
     setup_mode = false;
 
     info.respawn_tokens = 0;
-    info.current_respawn_tokens = 0;
+    info.current_respawn_tokens = 111;
     info.policies = new respawn_counter_policy_t[0];
     info.policies_length = 0;
 
@@ -25,6 +31,8 @@ void respawn_counter_service_t::init()
 
 void respawn_counter_service_t::task(void *pvParameter)
 {
+    draw_on_matrix_display();
+
     bool respawn_button_led = false;
 
     while (1)
@@ -58,22 +66,18 @@ void respawn_counter_service_t::handle_button_event(button_event_t button_event)
     switch (setup_mode)
     {
     case false:
-        // 1 sec
-        if (button_event.duration < 1000000)
+        // 5 sec
+        if (button_event.duration <= 5000000)
             short_press();
-
-        // 10 sec
-        if (button_event.duration > 10000000)
+        else
             long_press();
         break;
 
     case true:
-        // 1 sec
-        if (button_event.duration < 1000000)
-            setup_mode_short_press();
-
         // 5 sec
-        if (button_event.duration > 5000000)
+        if (button_event.duration <= 5000000)
+            setup_mode_short_press();
+        else
             setup_mode_long_press();
         break;
     }
@@ -122,15 +126,17 @@ void respawn_counter_service_t::short_press()
         buzzer_event_queue_handler.add_to_queue(RESPAWN_TOKEN_DECREMENT);
     }
 
-    // TODO: Update matrix display with respawn_tokens
+    draw_on_matrix_display();
 }
 
 void respawn_counter_service_t::long_press()
 {
     ESP_LOGI(TAG, "Setup mode enable");
 
-    buzzer_event_queue_handler.add_to_queue(RESPAWN_SETUP_MODE_ENABLED);
     setup_mode = true;
+    setup_mode_menu = 0;
+    buzzer_event_queue_handler.add_to_queue(SETUP_MODE_ENABLED);
+    draw_on_matrix_display();
 
     // TODO: Implement
 }
@@ -139,6 +145,13 @@ void respawn_counter_service_t::setup_mode_short_press()
 {
     ESP_LOGI(TAG, "Setup mode short press");
 
+    if (setup_mode_menu == 2)
+        setup_mode_menu = 0;
+    else
+        setup_mode_menu++;
+
+    draw_on_matrix_display();
+
     // TODO: Implement
 }
 
@@ -146,9 +159,40 @@ void respawn_counter_service_t::setup_mode_long_press()
 {
     ESP_LOGI(TAG, "Setup mode long press");
 
-    // TODO: Implement
-
     setup_mode = false;
+    buzzer_event_queue_handler.add_to_queue(SETUP_MODE_DISABLED);
+    draw_on_matrix_display();
+
+    // TODO: Implement
+}
+
+void respawn_counter_service_t::draw_on_matrix_display()
+{
+    matrix_display_service.clear_all();
+
+    if (setup_mode == true)
+    {
+        matrix_display_service.draw_special_character(0, WRENCH);
+
+        switch (setup_mode_menu)
+        {
+        case 0:
+            matrix_display_service.draw_special_character(4, GROUP);
+            break;
+
+        case 1:
+            matrix_display_service.draw_special_character(4, ARROW_UP_RIGHT);
+            break;
+
+        case 2:
+            matrix_display_service.draw_special_character(4, ARROW_DOWN_RIGHT);
+            break;
+        }
+    }
+
+    matrix_display_service.draw_tall_number(1, 5, info.current_respawn_tokens / 100);
+    matrix_display_service.draw_tall_number(2, 6, (info.current_respawn_tokens / 10) % 10);
+    matrix_display_service.draw_tall_number(3, 7, info.current_respawn_tokens % 10);
 }
 
 respawn_counter_info_t respawn_counter_service_t::get()

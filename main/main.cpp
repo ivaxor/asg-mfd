@@ -22,7 +22,7 @@ extern "C" void app_main(void)
     button_isr_handler.init();
     button_raw_event_queue_handler.init();
     buzzer_event_queue_handler.init();
-    led_heartbeat_service.init();
+    led_heartbeat_service_t::init();
     matrix_display_service.init();
     webserver_service.init();
     respawn_counter_service.init();
@@ -50,13 +50,7 @@ extern "C" void app_main(void)
                 &buzzer_event_queue_handler,
                 5,
                 NULL);
-    xTaskCreate([](void *param)
-                { static_cast<led_heartbeat_service_t *>(param)->task(nullptr); },
-                "led_heartbeat_service_task",
-                4096,
-                &led_heartbeat_service,
-                5,
-                NULL);
+    xTaskCreate(led_heartbeat_service_t::task, "led_heartbeat_service_t", 4096, NULL, 5, NULL);
     xTaskCreate([](void *param)
                 { static_cast<respawn_counter_service_t *>(param)->task(nullptr); },
                 "respawn_counter_service_task",

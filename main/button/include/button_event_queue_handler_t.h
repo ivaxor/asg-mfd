@@ -11,8 +11,8 @@
 class button_event_queue_handler_t
 {
 private:
-    const char *TAG = "button_event_queue_handler_t";
-    QueueHandle_t queue;
+    static const char *TAG;
+    static QueueHandle_t queue;
 
 public:
     void init();

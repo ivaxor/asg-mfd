@@ -6,7 +6,8 @@
 typedef enum
 {
     DEPRESSED,
-    PRESSED,    
+    PRESSED,
+    DOUBLE_CLICK,
 } BUTTON_EVENT_STATE;
 
 typedef struct

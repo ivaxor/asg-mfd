@@ -8,14 +8,16 @@
 class respawn_counter_service_t
 {
 private:
-    const char *TAG = "respawn_counter_service_t";
-    bool setup_mode;
-    respawn_counter_info_t info;
+    static const char *TAG;
+    static bool setup_mode;
+    static uint8_t setup_mode_menu;
+    static respawn_counter_info_t info;
 
     void short_press();
     void long_press();
     void setup_mode_short_press();
     void setup_mode_long_press();
+    void draw_on_matrix_display();
 
 public:
     void init();

@@ -6,7 +6,8 @@
 #include "led_strip_rmt.h"
 #include "include/led_heartbeat_service_t.h"
 
-led_heartbeat_service_t led_heartbeat_service;
+const char *led_heartbeat_service_t::TAG = "led_heartbeat_service_t";
+led_strip_handle_t led_heartbeat_service_t::led_strip;
 
 void led_heartbeat_service_t::init()
 {
@@ -39,7 +40,7 @@ void led_heartbeat_service_t::task(void *pvParameter)
 
     while (1)
     {
-        ESP_ERROR_CHECK(led_strip_set_pixel(led_strip, 0, 0, intensity, 0));
+        ESP_ERROR_CHECK(led_strip_set_pixel(led_strip, 0, intensity, intensity, intensity));
         ESP_ERROR_CHECK(led_strip_refresh(led_strip));
 
         vTaskDelay(pdMS_TO_TICKS(10));

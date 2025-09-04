@@ -7,6 +7,9 @@
 
 #define BUZZER_PIN GPIO_NUM_4
 
+const char *buzzer_event_queue_handler_t::TAG = "buzzer_event_queue_handler_t";
+QueueHandle_t buzzer_event_queue_handler_t::queue;
+
 buzzer_event_queue_handler_t buzzer_event_queue_handler;
 
 void buzzer_event_queue_handler_t::init()
@@ -75,8 +78,8 @@ void buzzer_event_queue_handler_t::task(void *pvParameter)
             }
             break;
 
-        case RESPAWN_SETUP_MODE_ENABLED:
-            ESP_LOGI(TAG, "Playing RESPAWN_SETUP_MODE_ENABLED");
+        case SETUP_MODE_ENABLED:
+            ESP_LOGI(TAG, "Playing SETUP_MODE_ENABLED");
             for (uint8_t i = 0; i < 3; i++)
             {
                 gpio_set_level(BUZZER_PIN, 1);
@@ -88,8 +91,8 @@ void buzzer_event_queue_handler_t::task(void *pvParameter)
             }
             break;
 
-        case RESPAWN_SETUP_MODE_DISABLED:
-            ESP_LOGI(TAG, "Playing RESPAWN_SETUP_MODE_DISABLED");
+        case SETUP_MODE_DISABLED:
+            ESP_LOGI(TAG, "Playing SETUP_MODE_DISABLED");
             for (uint8_t i = 0; i < 3; i++)
             {
                 gpio_set_level(BUZZER_PIN, 1);

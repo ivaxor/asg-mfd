@@ -12,9 +12,10 @@
 class button_raw_event_queue_handler_t
 {
 private:
-    const char *TAG = "button_raw_event_queue_handler_t";
-    int64_t press_timestamps[GPIO_NUM_MAX] = {0};
-    QueueHandle_t queue;
+    static const char *TAG;
+    static int64_t press_timestamps[GPIO_NUM_MAX];
+    static int64_t click_timestamps[GPIO_NUM_MAX];
+    static QueueHandle_t queue;
 
 public:
     void init();
