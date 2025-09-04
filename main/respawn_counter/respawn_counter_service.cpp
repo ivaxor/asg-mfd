@@ -15,8 +15,6 @@ bool respawn_counter_service_t::setup_mode;
 uint8_t respawn_counter_service_t::setup_mode_menu;
 respawn_counter_info_t respawn_counter_service_t::info;
 
-respawn_counter_service_t respawn_counter_service;
-
 void respawn_counter_service_t::init()
 {
     setup_mode = false;
@@ -90,7 +88,7 @@ void respawn_counter_service_t::short_press()
     if (info.current_respawn_tokens == 0)
     {
         ESP_LOGI(TAG, "No respawn token left");
-        buzzer_event_queue_handler.add_to_queue(RESPAWN_NO_TOKENS);
+        buzzer_event_queue_handler_t::add_to_queue(RESPAWN_NO_TOKENS);
         return;
     }
 
@@ -118,12 +116,12 @@ void respawn_counter_service_t::short_press()
     if (respawn_batch == true)
     {
         ESP_LOGI(TAG, "Batch respawn");
-        buzzer_event_queue_handler.add_to_queue(RESPAWN_BATCH);
+        buzzer_event_queue_handler_t::add_to_queue(RESPAWN_BATCH);
     }
     else
     {
         ESP_LOGI(TAG, "Waiting for batch respawn");
-        buzzer_event_queue_handler.add_to_queue(RESPAWN_TOKEN_DECREMENT);
+        buzzer_event_queue_handler_t::add_to_queue(RESPAWN_TOKEN_DECREMENT);
     }
 
     draw_on_matrix_display();
@@ -135,7 +133,7 @@ void respawn_counter_service_t::long_press()
 
     setup_mode = true;
     setup_mode_menu = 0;
-    buzzer_event_queue_handler.add_to_queue(SETUP_MODE_ENABLED);
+    buzzer_event_queue_handler_t::add_to_queue(SETUP_MODE_ENABLED);
     draw_on_matrix_display();
 
     // TODO: Implement
@@ -160,7 +158,7 @@ void respawn_counter_service_t::setup_mode_long_press()
     ESP_LOGI(TAG, "Setup mode long press");
 
     setup_mode = false;
-    buzzer_event_queue_handler.add_to_queue(SETUP_MODE_DISABLED);
+    buzzer_event_queue_handler_t::add_to_queue(SETUP_MODE_DISABLED);
     draw_on_matrix_display();
 
     // TODO: Implement
@@ -168,31 +166,31 @@ void respawn_counter_service_t::setup_mode_long_press()
 
 void respawn_counter_service_t::draw_on_matrix_display()
 {
-    matrix_display_service.clear_all();
+    matrix_display_service_t::clear_all();
 
     if (setup_mode == true)
     {
-        matrix_display_service.draw_special_character(0, WRENCH);
+        matrix_display_service_t::draw_special_character(0, WRENCH);
 
         switch (setup_mode_menu)
         {
         case 0:
-            matrix_display_service.draw_special_character(4, GROUP);
+            matrix_display_service_t::draw_special_character(4, GROUP);
             break;
 
         case 1:
-            matrix_display_service.draw_special_character(4, ARROW_UP_RIGHT);
+            matrix_display_service_t::draw_special_character(4, ARROW_UP_RIGHT);
             break;
 
         case 2:
-            matrix_display_service.draw_special_character(4, ARROW_DOWN_RIGHT);
+            matrix_display_service_t::draw_special_character(4, ARROW_DOWN_RIGHT);
             break;
         }
     }
 
-    matrix_display_service.draw_tall_number(1, 5, info.current_respawn_tokens / 100);
-    matrix_display_service.draw_tall_number(2, 6, (info.current_respawn_tokens / 10) % 10);
-    matrix_display_service.draw_tall_number(3, 7, info.current_respawn_tokens % 10);
+    matrix_display_service_t::draw_tall_number(1, 5, info.current_respawn_tokens / 100);
+    matrix_display_service_t::draw_tall_number(2, 6, (info.current_respawn_tokens / 10) % 10);
+    matrix_display_service_t::draw_tall_number(3, 7, info.current_respawn_tokens % 10);
 }
 
 respawn_counter_info_t respawn_counter_service_t::get()

@@ -7,11 +7,10 @@ class button_isr_handler_t
 {
 private:
     static void IRAM_ATTR handler(void *arg);
+    button_isr_handler_t();
 
 public:
-    void init();
+    static void init();
 };
-
-extern button_isr_handler_t button_isr_handler;
 
 #endif // BUTTON_ISR_HANDLER_H

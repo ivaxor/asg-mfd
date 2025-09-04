@@ -21,15 +21,14 @@ private:
     static const uint64_t digits_lower_parts[];
     static const uint64_t special_characters[];
     static max7219_t device;
+    matrix_display_service_t();
 
 public:
-    void init();
-    void clear(uint8_t display);
-    void clear_all();
-    void draw_special_character(uint8_t display, MATRIX_SPECIAL_CHARACTER character);
-    void draw_tall_number(uint8_t display1, uint8_t display2, uint8_t number);
+    static void init();
+    static void clear(uint8_t display);
+    static void clear_all();
+    static void draw_special_character(uint8_t display, MATRIX_SPECIAL_CHARACTER character);
+    static void draw_tall_number(uint8_t display1, uint8_t display2, uint8_t number);
 };
-
-extern matrix_display_service_t matrix_display_service;
 
 #endif // MATRIX_DISPLAY_SERVICE_H

@@ -10,8 +10,6 @@
 
 #define RESPAWN_BUTTON_GPIO GPIO_NUM_0
 
-button_isr_handler_t button_isr_handler;
-
 void IRAM_ATTR button_isr_handler_t::handler(void *arg)
 {
     gpio_num_t gpio_num = static_cast<gpio_num_t>(reinterpret_cast<int>(arg));
@@ -22,7 +20,7 @@ void IRAM_ATTR button_isr_handler_t::handler(void *arg)
     button_raw_event.pressed = !gpio_get_level(gpio_num);
     button_raw_event.timestamp = esp_timer_get_time();
 
-    button_raw_event_queue_handler.add_to_queue_isr(&button_raw_event);
+    button_raw_event_queue_handler_t::add_to_queue_isr(&button_raw_event);
 }
 
 void button_isr_handler_t::init()

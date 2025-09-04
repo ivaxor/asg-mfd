@@ -10,8 +10,6 @@
 #define PIN_NUM_MOSI GPIO_NUM_11
 #define PIN_NUM_CLK GPIO_NUM_12
 
-matrix_display_service_t matrix_display_service;
-
 const char *matrix_display_service_t::TAG = "matrix_display_service_t";
 
 const uint8_t matrix_display_service_t::blank[8] = {};

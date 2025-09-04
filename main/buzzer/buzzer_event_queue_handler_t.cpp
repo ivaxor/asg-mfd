@@ -10,8 +10,6 @@
 const char *buzzer_event_queue_handler_t::TAG = "buzzer_event_queue_handler_t";
 QueueHandle_t buzzer_event_queue_handler_t::queue;
 
-buzzer_event_queue_handler_t buzzer_event_queue_handler;
-
 void buzzer_event_queue_handler_t::init()
 {
     gpio_set_direction(BUZZER_PIN, GPIO_MODE_OUTPUT);

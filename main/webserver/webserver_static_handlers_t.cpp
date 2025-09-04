@@ -4,8 +4,6 @@
 #include "cJSON.h"
 #include "include/webserver_static_handlers_t.h"
 
-webserver_static_handlers_t webserver_static_handlers;
-
 // HTTP Error (404) Handler - Redirects all requests to the root page
 esp_err_t webserver_static_handlers_t::http_404_error_handler(httpd_req_t *req, httpd_err_code_t err)
 {

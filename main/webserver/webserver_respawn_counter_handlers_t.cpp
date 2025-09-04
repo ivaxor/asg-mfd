@@ -5,11 +5,9 @@
 #include "include/webserver_respawn_counter_handlers_t.h"
 #include "../respawn_counter/include/respawn_counter_service_t.h"
 
-webserver_respawn_counter_handlers_t webserver_respawn_counter_handlers;
-
 esp_err_t webserver_respawn_counter_handlers_t::respawn_counter_info_get_handler(httpd_req_t *req)
 {
-    respawn_counter_info_t info = respawn_counter_service.get();
+    respawn_counter_info_t info = respawn_counter_service_t::get();
 
     cJSON *root = cJSON_CreateObject();
     cJSON_AddNumberToObject(root, "current_respawn_tokens", info.current_respawn_tokens);
@@ -106,7 +104,7 @@ esp_err_t webserver_respawn_counter_handlers_t::respawn_counter_info_post_handle
         }
     }
 
-    respawn_counter_service.replace(info);
+    respawn_counter_service_t::replace(info);
 
     cJSON_Delete(root);
     httpd_resp_sendstr(req, "OK");

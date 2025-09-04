@@ -16,13 +16,12 @@ private:
     static int64_t press_timestamps[GPIO_NUM_MAX];
     static int64_t click_timestamps[GPIO_NUM_MAX];
     static QueueHandle_t queue;
+    button_raw_event_queue_handler_t();
 
 public:
-    void init();
-    void add_to_queue_isr(button_raw_event_t *button_raw_event);
-    void task(void *pvParameter);
+    static void init();
+    static void add_to_queue_isr(button_raw_event_t *button_raw_event);
+    static void task(void *pvParameter);
 };
-
-extern button_raw_event_queue_handler_t button_raw_event_queue_handler;
 
 #endif // BUTTON_RAW_EVENT_QUEUE_HANDLER_H

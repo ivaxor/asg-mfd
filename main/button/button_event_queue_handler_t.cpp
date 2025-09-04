@@ -7,8 +7,6 @@
 const char *button_event_queue_handler_t::TAG = "button_event_queue_handler_t";
 QueueHandle_t button_event_queue_handler_t::queue;
 
-button_event_queue_handler_t button_event_queue_handler;
-
 void button_event_queue_handler_t::init()
 {
     queue = xQueueCreate(10, sizeof(button_event_t));
@@ -36,6 +34,6 @@ void button_event_queue_handler_t::task(void *pvParameter)
         xQueueReceive(queue, &button_event, portMAX_DELAY);
         ESP_LOGI(TAG, "Button event received. GPIO %u. State: %u. Duration: %lli ms", button_event.gpio_num, button_event.state, button_event.duration / 1000);
 
-        respawn_counter_service.handle_button_event(button_event);
+        respawn_counter_service_t::handle_button_event(button_event);
     }
 }

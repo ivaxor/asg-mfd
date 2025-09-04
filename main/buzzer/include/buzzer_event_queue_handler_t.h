@@ -13,13 +13,12 @@ class buzzer_event_queue_handler_t
 private:
     static const char *TAG;
     static QueueHandle_t queue;
+    buzzer_event_queue_handler_t();
 
 public:
-    void init();
-    void add_to_queue(BUZZER_BEEP_TYPE beep_type);
-    void task(void *pvParameter);
+    static void init();
+    static void add_to_queue(BUZZER_BEEP_TYPE beep_type);
+    static void task(void *pvParameter);
 };
-
-extern buzzer_event_queue_handler_t buzzer_event_queue_handler;
 
 #endif // BUZZER_EVENT_QUEUE_HANDLER_H

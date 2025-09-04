@@ -9,8 +9,6 @@ int64_t button_raw_event_queue_handler_t::press_timestamps[GPIO_NUM_MAX];
 int64_t button_raw_event_queue_handler_t::click_timestamps[GPIO_NUM_MAX];
 QueueHandle_t button_raw_event_queue_handler_t::queue;
 
-button_raw_event_queue_handler_t button_raw_event_queue_handler;
-
 void button_raw_event_queue_handler_t::init()
 {
     queue = xQueueCreate(10, sizeof(button_raw_event_t));
@@ -66,10 +64,10 @@ void button_raw_event_queue_handler_t::task(void *pvParameter)
                 first_click_event.state = PRESSED;
                 first_click_event.duration = 0;
                 first_click_event.gpio_num = button_raw_event.gpio_num;
-                button_event_queue_handler.add_to_queue(first_click_event);
+                button_event_queue_handler_t::add_to_queue(first_click_event);
             }
             click_timestamps[button_raw_event.gpio_num] = 0;
-            button_event_queue_handler.add_to_queue(button_event);
+            button_event_queue_handler_t::add_to_queue(button_event);
             break;
 
         case 1:
@@ -88,7 +86,7 @@ void button_raw_event_queue_handler_t::task(void *pvParameter)
                 button_event.duration = button_raw_event.timestamp - lastClickTimestamp;
                 click_timestamps[button_raw_event.gpio_num] = 0;
                 press_timestamps[button_raw_event.gpio_num] = button_raw_event.timestamp;
-                button_event_queue_handler.add_to_queue(button_event);
+                button_event_queue_handler_t::add_to_queue(button_event);
             }
             else
             {
