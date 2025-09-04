@@ -27,8 +27,15 @@ void respawn_counter_service_t::init()
     gpio_set_direction(RESPAWN_BUTTON_LED_PIN, GPIO_MODE_OUTPUT);
 }
 
+void respawn_counter_service_t::uninit()
+{
+    gpio_set_level(RESPAWN_BUTTON_LED_PIN, 0);
+}
+
 void respawn_counter_service_t::task(void *pvParameter)
 {
+    ESP_LOGI(TAG, "Starting task");
+
     draw_on_matrix_display();
 
     bool respawn_button_led = false;

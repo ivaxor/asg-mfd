@@ -34,9 +34,11 @@ void buzzer_event_queue_handler_t::add_to_queue(BUZZER_BEEP_TYPE beep_type)
 
 void buzzer_event_queue_handler_t::task(void *pvParameter)
 {
-    BUZZER_BEEP_TYPE beep_type;
+    ESP_LOGI(TAG, "Starting task");
+
     while (1)
     {
+        BUZZER_BEEP_TYPE beep_type;
         xQueueReceive(queue, &beep_type, portMAX_DELAY);
     new_beep:
         ESP_LOGI(TAG, "Buzzer event received. Type: %u", beep_type);

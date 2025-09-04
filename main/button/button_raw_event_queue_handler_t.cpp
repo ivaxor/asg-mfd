@@ -28,9 +28,9 @@ void button_raw_event_queue_handler_t::task(void *pvParameter)
 {
     ESP_LOGI(TAG, "Starting task");
 
-    button_raw_event_t button_raw_event;
     while (1)
     {
+        button_raw_event_t button_raw_event;
         xQueueReceive(queue, &button_raw_event, portMAX_DELAY);
         ESP_LOGI(TAG, "Button raw event received. GPIO: %u. Pressed: %u. Timestamp: %lli", button_raw_event.gpio_num, button_raw_event.pressed, button_raw_event.timestamp);
 

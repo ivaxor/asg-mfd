@@ -21,6 +21,7 @@ private:
 
 public:
     static void init();
+    static void uninit();
     static void task(void *pvParameter);
     static void handle_button_event(button_event_t button_event);
     static respawn_counter_info_t get();

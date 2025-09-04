@@ -60,15 +60,22 @@ void matrix_display_service_t::init()
     ESP_ERROR_CHECK(spi_bus_initialize(SPI2_HOST, &spi_bus_config, SPI_DMA_CH_AUTO));
 
     // Configure the MAX7219 device
-    matrix_display_service_t::device = {
+    device = {
         .digits = 0,
         .cascade_size = NUM_DISPLAYS,
         .mirrored = true,
     };
 
     // Initialize the device descriptor and display chain
-    ESP_ERROR_CHECK(max7219_init_desc(&matrix_display_service_t::device, SPI2_HOST, MAX7219_MAX_CLOCK_SPEED_HZ, PIN_NUM_CS));
-    ESP_ERROR_CHECK(max7219_init(&matrix_display_service_t::device));
+    ESP_ERROR_CHECK(max7219_init_desc(&device, SPI2_HOST, MAX7219_MAX_CLOCK_SPEED_HZ, PIN_NUM_CS));
+    ESP_ERROR_CHECK(max7219_init(&device));
+}
+
+void matrix_display_service_t::uninit()
+{
+    max7219_set_shutdown_mode(&device, true);
+    max7219_free_desc(&device);
+    spi_bus_free(SPI2_HOST);
 }
 
 void matrix_display_service_t::clear(uint8_t display)
