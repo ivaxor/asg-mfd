@@ -1,6 +1,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_http_server.h"
+#include "esp_timer.h"
 #include "cJSON.h"
 #include "include/webserver_game_mode_handlers_t.h"
 #include "../game_mode/include/game_mode_service_t.h"
@@ -12,9 +13,11 @@ esp_err_t webserver_game_mode_handlers_t::game_mode_info_get_handler(httpd_req_t
     cJSON *root = cJSON_CreateObject();
     cJSON_AddNumberToObject(root, "mode", info->mode);
     cJSON_AddNumberToObject(root, "start_timestamp", info->start_timestamp);
+    cJSON_AddNumberToObject(root, "timestamp", esp_timer_get_time());
 
     const char *json_string = cJSON_Print(root);
     httpd_resp_set_type(req, "application/json");
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
     httpd_resp_send(req, json_string, HTTPD_RESP_USE_STRLEN);
 
     cJSON_Delete(root);
@@ -53,6 +56,7 @@ esp_err_t webserver_game_mode_handlers_t::game_mode_info_post_handler(httpd_req_
     game_mode_service_t::replace((GAME_MODE)mode->valueint);
 
     cJSON_Delete(root);
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
     httpd_resp_sendstr(req, "OK");
     return ESP_OK;
 }

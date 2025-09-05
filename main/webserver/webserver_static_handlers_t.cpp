@@ -4,20 +4,15 @@
 #include "cJSON.h"
 #include "include/webserver_static_handlers_t.h"
 
-// HTTP Error (404) Handler - Redirects all requests to the root page
 esp_err_t webserver_static_handlers_t::http_404_error_handler(httpd_req_t *req, httpd_err_code_t err)
 {
-    // Set status
     httpd_resp_set_status(req, "302 Temporary Redirect");
-    // Redirect to the "/" root directory
     httpd_resp_set_hdr(req, "Location", "/");
-    // iOS requires content in the response to detect a captive portal, simply redirecting is not sufficient.
     httpd_resp_send(req, "Redirect to the captive portal", HTTPD_RESP_USE_STRLEN);
 
     return ESP_OK;
 }
 
-// Handler for the root page (index.html)
 extern const char index_html_start[] asm("_binary_index_html_start");
 extern const char index_html_end[] asm("_binary_index_html_end");
 esp_err_t webserver_static_handlers_t::index_html_handler(httpd_req_t *req)
@@ -33,7 +28,6 @@ const httpd_uri_t webserver_static_handlers_t::index_html_uri = {
     .handler = index_html_handler,
 };
 
-// Handler for main.js
 extern const char main_js_start[] asm("_binary_main_js_start");
 extern const char main_js_end[] asm("_binary_main_js_end");
 esp_err_t webserver_static_handlers_t::main_js_handler(httpd_req_t *req)
@@ -49,7 +43,6 @@ const httpd_uri_t webserver_static_handlers_t::main_js_uri = {
     .handler = main_js_handler,
 };
 
-// Handler for styles.css
 extern const char styles_css_start[] asm("_binary_styles_css_start");
 extern const char styles_css_end[] asm("_binary_styles_css_end");
 esp_err_t webserver_static_handlers_t::styles_css_handler(httpd_req_t *req)
@@ -65,7 +58,6 @@ const httpd_uri_t webserver_static_handlers_t::styles_css_uri = {
     .handler = styles_css_handler,
 };
 
-// Handler for favicon.ico
 extern const char favicon_ico_start[] asm("_binary_favicon_ico_start");
 extern const char favicon_ico_end[] asm("_binary_favicon_ico_end");
 esp_err_t webserver_static_handlers_t::favicon_ico_handler(httpd_req_t *req)
@@ -80,39 +72,3 @@ const httpd_uri_t webserver_static_handlers_t::favicon_ico_uri = {
     .method = HTTP_GET,
     .handler = favicon_ico_handler,
 };
-
-// Handler for the API info endpoint
-esp_err_t api_info_handler(httpd_req_t *req)
-{
-    cJSON *root = cJSON_CreateObject();
-    cJSON_AddNumberToObject(root, "uptime", xTaskGetTickCount() * portTICK_PERIOD_MS / 1000);
-    cJSON_AddStringToObject(root, "status", "ok");
-
-    const char *json_string = cJSON_Print(root);
-    httpd_resp_set_type(req, "application/json");
-    httpd_resp_send(req, json_string, HTTPD_RESP_USE_STRLEN);
-
-    cJSON_Delete(root);
-    free((void *)json_string);
-    return ESP_OK;
-}
-const httpd_uri_t api_info_uri = {
-    .uri = "/api/info",
-    .method = HTTP_GET,
-    .handler = api_info_handler,
-    .user_ctx = NULL,
-};
-
-// Handler for the API respawn counter policies
-esp_err_t respawn_counter_policies_get_handler(httpd_req_t *req)
-{
-    cJSON *root = cJSON_CreateArray();
-
-    const char *json_string = cJSON_Print(root);
-    httpd_resp_set_type(req, "application/json");
-    httpd_resp_send(req, json_string, HTTPD_RESP_USE_STRLEN);
-
-    cJSON_Delete(root);
-    free((void *)json_string);
-    return ESP_OK;
-}

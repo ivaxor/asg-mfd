@@ -19,7 +19,7 @@ void respawn_counter_service_t::init()
 {
     setup_mode = false;
 
-    info.respawn_tokens = 0;
+    info.respawn_tokens = 111;
     info.current_respawn_tokens = 111;
     info.policies = new respawn_counter_policy_t[0];
     info.policies_length = 0;
