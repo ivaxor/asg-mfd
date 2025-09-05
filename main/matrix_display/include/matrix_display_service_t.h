@@ -20,6 +20,7 @@ private:
     static const uint64_t digits_upper_parts[];
     static const uint64_t digits_lower_parts[];
     static const uint64_t special_characters[];
+    
     static max7219_t device;
 
     matrix_display_service_t();
@@ -27,7 +28,6 @@ private:
 public:
     static void init();
     static void uninit();
-
     static void clear(uint8_t display);
     static void clear_all();
     static void draw_special_character(uint8_t display, MATRIX_SPECIAL_CHARACTER character);

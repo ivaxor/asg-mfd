@@ -8,9 +8,26 @@ esp_err_t webserver_static_handlers_t::http_404_error_handler(httpd_req_t *req, 
 {
     httpd_resp_set_status(req, "302 Temporary Redirect");
     httpd_resp_set_hdr(req, "Location", "/");
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Headers", "Content-Type");
     httpd_resp_send(req, "Redirect to the captive portal", HTTPD_RESP_USE_STRLEN);
 
     return ESP_OK;
+}
+
+esp_err_t webserver_static_handlers_t::cors_handler(httpd_req_t *req)
+{
+    httpd_resp_set_hdr_cors(req);
+    httpd_resp_send(req, NULL, 0);
+    return ESP_OK;
+}
+
+void webserver_static_handlers_t::httpd_resp_set_hdr_cors(httpd_req_t *req)
+{
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Headers", "Content-Type");
 }
 
 extern const char index_html_start[] asm("_binary_index_html_start");

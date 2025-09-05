@@ -8,10 +8,13 @@ class game_mode_service_t
 {
 private:
     static const char *TAG;
+
     static game_mode_info_t info;
     static TaskHandle_t respawn_counter_task;
+
     static void replace_cleanup();
     static void replace_init_new(GAME_MODE new_mode);
+    
     game_mode_service_t();
 
 public:

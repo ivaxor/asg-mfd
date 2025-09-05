@@ -8,7 +8,9 @@ class led_heartbeat_service_t
 {
 private:
     static const char *TAG;
+
     static led_strip_handle_t led_strip;
+    
     led_heartbeat_service_t();
 
 public:

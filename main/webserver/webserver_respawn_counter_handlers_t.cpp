@@ -3,7 +3,15 @@
 #include "esp_http_server.h"
 #include "cJSON.h"
 #include "include/webserver_respawn_counter_handlers_t.h"
+#include "include/webserver_static_handlers_t.h"
 #include "../respawn_counter/include/respawn_counter_service_t.h"
+
+const httpd_uri_t webserver_respawn_counter_handlers_t::respawn_counter_info_options_uri = {
+    .uri = "/api/respawn-counter",
+    .method = HTTP_OPTIONS,
+    .handler = webserver_static_handlers_t::cors_handler,
+    .user_ctx = NULL,
+};
 
 esp_err_t webserver_respawn_counter_handlers_t::respawn_counter_info_get_handler(httpd_req_t *req)
 {
@@ -27,7 +35,7 @@ esp_err_t webserver_respawn_counter_handlers_t::respawn_counter_info_get_handler
 
     const char *json_string = cJSON_Print(root);
     httpd_resp_set_type(req, "application/json");
-    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+    webserver_static_handlers_t::httpd_resp_set_hdr_cors(req);
     httpd_resp_send(req, json_string, HTTPD_RESP_USE_STRLEN);
 
     cJSON_Delete(root);
@@ -108,7 +116,7 @@ esp_err_t webserver_respawn_counter_handlers_t::respawn_counter_info_post_handle
     respawn_counter_service_t::replace(info);
 
     cJSON_Delete(root);
-    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+    webserver_static_handlers_t::httpd_resp_set_hdr_cors(req);
     httpd_resp_sendstr(req, "OK");
     return ESP_OK;
 }

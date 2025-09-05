@@ -12,7 +12,9 @@ class buzzer_event_queue_handler_t
 {
 private:
     static const char *TAG;
+
     static QueueHandle_t queue;
+    
     buzzer_event_queue_handler_t();
 
 public:

@@ -97,16 +97,19 @@ httpd_handle_t webserver_service_t::start_webserver()
     {
         // Set URI handlers
         ESP_LOGI(TAG, "Registering URI handlers");
+
         httpd_register_uri_handler(server, &webserver_static_handlers_t::index_html_uri);
         httpd_register_uri_handler(server, &webserver_static_handlers_t::main_js_uri);
         httpd_register_uri_handler(server, &webserver_static_handlers_t::styles_css_uri);
         httpd_register_uri_handler(server, &webserver_static_handlers_t::favicon_ico_uri);
 
         httpd_register_uri_handler(server, &webserver_game_mode_handlers_t::game_mode_info_get_uri);
-        httpd_register_uri_handler(server, &webserver_game_mode_handlers_t::game_mode_info_get_uri);
+        httpd_register_uri_handler(server, &webserver_game_mode_handlers_t::game_mode_info_post_uri);
+        httpd_register_uri_handler(server, &webserver_game_mode_handlers_t::game_mode_info_options_uri);
 
-        httpd_register_uri_handler(server, &webserver_respawn_counter_handlers_t::respawn_counter_info_get_uri);
         httpd_register_uri_handler(server, &webserver_respawn_counter_handlers_t::respawn_counter_info_post_uri);
+        httpd_register_uri_handler(server, &webserver_respawn_counter_handlers_t::respawn_counter_info_post_uri);
+        httpd_register_uri_handler(server, &webserver_respawn_counter_handlers_t::respawn_counter_info_options_uri);
 
         httpd_register_err_handler(server, HTTPD_404_NOT_FOUND, webserver_static_handlers_t::http_404_error_handler);
     }

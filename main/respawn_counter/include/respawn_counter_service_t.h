@@ -9,6 +9,7 @@ class respawn_counter_service_t
 {
 private:
     static const char *TAG;
+    
     static bool setup_mode;
     static uint8_t setup_mode_menu;
     static respawn_counter_info_t info;

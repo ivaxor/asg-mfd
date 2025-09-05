@@ -8,10 +8,12 @@ class webserver_service_t
 {
 private:
     static const char *TAG;
+
     static void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data);
     static void wifi_init_softap();
     static void dhcp_set_captiveportal_url();
     static httpd_handle_t start_webserver();
+    
     webserver_service_t();
 
 public:
