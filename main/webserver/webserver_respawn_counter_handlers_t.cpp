@@ -72,7 +72,8 @@ esp_err_t webserver_respawn_counter_handlers_t::respawn_counter_info_post_handle
     cJSON *respawn_tokens = cJSON_GetObjectItemCaseSensitive(root, "respawn_tokens");
     cJSON *current_respawn_tokens = cJSON_GetObjectItemCaseSensitive(root, "current_respawn_tokens");
     cJSON *policies = cJSON_GetObjectItemCaseSensitive(root, "policies");
-    if (!cJSON_IsNumber(respawn_tokens) || !cJSON_IsNumber(current_respawn_tokens) || !cJSON_IsArray(policies))
+    cJSON *policies_length = cJSON_GetObjectItemCaseSensitive(root, "policies_length");
+    if (!cJSON_IsNumber(respawn_tokens) || !cJSON_IsNumber(current_respawn_tokens) || !cJSON_IsArray(policies) || !cJSON_IsNumber(policies_length))
     {
         cJSON_Delete(root);
         httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "Invalid data types for one or more fields.");
@@ -83,11 +84,10 @@ esp_err_t webserver_respawn_counter_handlers_t::respawn_counter_info_post_handle
     info.respawn_tokens = respawn_tokens->valueint;
     info.current_respawn_tokens = current_respawn_tokens->valueint;
 
-    uint8_t policies_length = cJSON_GetArraySize(policies);
-    info.policies = new respawn_counter_policy_t[policies_length];
-    info.policies_length = policies_length;
+    info.policies_length = policies_length->valueint;
+    info.policies = new respawn_counter_policy_t[info.policies_length];    
 
-    for (uint8_t i = 0; i < policies_length; i++)
+    for (uint8_t i = 0; i < info.policies_length; i++)
     {
         cJSON *policy = cJSON_GetArrayItem(policies, i);
         if (cJSON_IsObject(policy))
