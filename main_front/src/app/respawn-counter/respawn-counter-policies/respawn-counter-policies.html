@@ -1,37 +1,59 @@
-<div >
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">Priority</th>
-                <th scope="col">Min</th>
-                <th scope="col">Max</th>
-                <th scope="col">Batch size</th>
-                <th scope="col">Actions</th>
-            </tr>
-        </thead>
-        
-        <tbody>
-            <tr *ngIf="info === undefined" class="placeholder-wave">
-                <th scope="row"><span class="placeholder col-12"></span></th>
-                <td><span class="placeholder col-12"></span></td>
-                <td><span class="placeholder col-12"></span></td>
-                <td><span class="placeholder col-12"></span></td>
-                <td><span class="placeholder col-12"></span></td>
-            </tr>
+<button class="btn btn-primary" (click)="add()">Add</button>
+<button class="btn btn-success" (click)="save()">Save</button>
 
-            <tr *ngFor="let policy of info?.policies">
-                <th scope="row">{{policy.priority}}</th>
-                <td>{{policy.min}}</td>
-                <td>{{policy.max}}</td>
-                <td>{{policy.batch_size}}</td>
-                <td>
-                    <div class="btn-group btn-group-sm" role="group" aria-label="Policy actions">
-                        <button type="button" class="btn btn-primary"><i class="bi bi-arrow-up"></i></button>
-                        <button type="button" class="btn btn-primary"><i class="bi bi-arrow-down"></i></button>
-                        <button type="button" class="btn btn-danger"><i class="bi bi-trash"></i></button>
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</div>
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Priority</th>
+            <th scope="col">Min</th>
+            <th scope="col">Max</th>
+            <th scope="col">Batch size</th>
+            <th scope="col">Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @if (info === undefined) {
+        <tr class="placeholder-wave">
+            <th scope="row"><span class="placeholder col-12"></span></th>
+            <td><span class="placeholder col-12"></span></td>
+            <td><span class="placeholder col-12"></span></td>
+            <td><span class="placeholder col-12"></span></td>
+            <td><span class="placeholder col-12"></span></td>
+        </tr>
+        }
+
+        @for(policy of info?.policies ?? []; track policy.priority) {
+        <tr>
+            <th scope="row">{{policy.priority}}</th>
+            <td>
+                <input type="number" [(ngModel)]="policy.min" [min]="0" [max]="info!.respawn_tokens"
+                    class="form-control" />
+            </td>
+            <td>
+                <input type="number" [(ngModel)]="policy.max" [min]="0" [max]="info!.respawn_tokens"
+                    class="form-control" />
+            </td>
+            <td>
+                <input type="number" [(ngModel)]="policy.batch_size" [min]="0" [max]="info!.respawn_tokens"
+                    class="form-control" />
+            </td>
+            <td>
+                <div class="btn-group btn-group-sm" role="group" aria-label="Policy actions">
+                    <button type="button" class="btn btn-primary" [disabled]="policy.priority === 1"
+                        (click)="changePriority(policy, -1)">
+                        <i class="bi bi-arrow-up"></i>
+                    </button>
+                    <button type="button" class="btn btn-primary" [disabled]="policy.priority === info!.policies.length"
+                        (click)="changePriority(policy, 1)">
+                        <i class="bi bi-arrow-down"></i>
+                    </button>
+                    <button type="button" class="btn btn-danger" (click)="remove(policy)">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>

@@ -1,3 +1,10 @@
-<p>respawn-counter-index works!</p>
+<div class="container-fluid">
+    <p>respawn-counter-index works!</p>
 
-<app-respawn-counter-policies></app-respawn-counter-policies>
+    @if (info$ | async; as info) {
+    <p>current_respawn_tokens: {{info.current_respawn_tokens}}</p>
+    <p>respawn_tokens: {{info.respawn_tokens}}</p>
+    }
+
+    <app-respawn-counter-policies [info$]="info$"></app-respawn-counter-policies>
+</div>

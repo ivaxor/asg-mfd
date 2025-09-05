@@ -1,0 +1,19 @@
+<div class="container-fluid">
+    <p>game-mode-index works!</p>
+
+    @if (info$ | async; as info) {
+    <p>Game mode: {{info.mode}}</p>
+
+    @switch (info.mode) {
+    @case (gameMode.RespawnCounter) {
+    <p>Respawn counter</p>
+    }
+    @default {
+    <p>Unknown</p>
+    }
+    }
+
+    <p>Start datetime: {{ info.start_date | date:'short' }}</p>
+    <p>Duration: {{ info.duration | date:'mediumTime' }}</p>
+    }
+</div>
