@@ -9,6 +9,7 @@ idf_component_register(
         "led/led_heartbeat_service_t.cpp"
         "matrix_display/matrix_display_service_t.cpp"
         "respawn_counter/respawn_counter_service.cpp"
+        "webserver/webserver_game_mode_handlers_t.cpp"
         "webserver/webserver_respawn_counter_handlers_t.cpp"
         "webserver/webserver_service_t.cpp"
         "webserver/webserver_static_handlers_t.cpp"

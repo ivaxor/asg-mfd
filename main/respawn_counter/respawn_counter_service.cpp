@@ -200,9 +200,9 @@ void respawn_counter_service_t::draw_on_matrix_display()
     matrix_display_service_t::draw_tall_number(3, 7, info.current_respawn_tokens % 10);
 }
 
-respawn_counter_info_t respawn_counter_service_t::get()
+respawn_counter_info_t *respawn_counter_service_t::get()
 {
-    return info;
+    return &info;
 }
 
 void respawn_counter_service_t::replace(respawn_counter_info_t new_info)

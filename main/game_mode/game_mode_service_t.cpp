@@ -1,12 +1,13 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_log.h"
+#include "esp_timer.h"
 #include "include/game_mode_service_t.h"
 #include "../respawn_counter/include/respawn_counter_service_t.h"
 #include "../matrix_display/include/matrix_display_service_t.h"
 
-const char *game_mode_service_t::TAG = "led_heartbeat_service_t";
-GAME_MODE game_mode_service_t::mode;
+const char *game_mode_service_t::TAG = "game_mode_service_t";
+game_mode_info_t game_mode_service_t::info;
 TaskHandle_t game_mode_service_t::respawn_counter_task;
 
 void game_mode_service_t::init()
@@ -17,7 +18,7 @@ void game_mode_service_t::init()
 
 void game_mode_service_t::replace_cleanup()
 {
-    switch (mode)
+    switch (info.mode)
     {
     case RESPAWN_COUNTER:
         vTaskDelete(respawn_counter_task);
@@ -54,12 +55,13 @@ void game_mode_service_t::replace_init_new(GAME_MODE new_mode)
         break;
     }
 
-    mode = new_mode;
+    info.mode = new_mode;
+    info.start_timestamp = esp_timer_get_time();
 }
 
-GAME_MODE game_mode_service_t::get()
+game_mode_info_t *game_mode_service_t::get()
 {
-    return mode;
+    return &info;
 }
 
 void game_mode_service_t::replace(GAME_MODE new_mode)

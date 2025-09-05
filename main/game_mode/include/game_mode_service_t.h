@@ -1,5 +1,5 @@
 #include "freertos/FreeRTOS.h"
-#include "game_mode_t.h"
+#include "game_mode_info_t.h"
 
 #ifndef GAME_MODE_SERVICE_H
 #define GAME_MODE_SERVICE_H
@@ -8,7 +8,7 @@ class game_mode_service_t
 {
 private:
     static const char *TAG;
-    static GAME_MODE mode;
+    static game_mode_info_t info;
     static TaskHandle_t respawn_counter_task;
     static void replace_cleanup();
     static void replace_init_new(GAME_MODE new_mode);
@@ -16,7 +16,7 @@ private:
 
 public:
     static void init();
-    static GAME_MODE get();
+    static game_mode_info_t *get();
     static void replace(GAME_MODE new_mode);
 };
 

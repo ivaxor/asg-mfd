@@ -1,0 +1,64 @@
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "esp_http_server.h"
+#include "cJSON.h"
+#include "include/webserver_game_mode_handlers_t.h"
+#include "../game_mode/include/game_mode_service_t.h"
+
+esp_err_t webserver_game_mode_handlers_t::game_mode_info_get_handler(httpd_req_t *req)
+{
+    game_mode_info_t *info = game_mode_service_t::get();
+
+    cJSON *root = cJSON_CreateObject();
+    cJSON_AddNumberToObject(root, "mode", info->mode);
+    cJSON_AddNumberToObject(root, "start_timestamp", info->start_timestamp);
+
+    const char *json_string = cJSON_Print(root);
+    httpd_resp_set_type(req, "application/json");
+    httpd_resp_send(req, json_string, HTTPD_RESP_USE_STRLEN);
+
+    cJSON_Delete(root);
+    free((void *)json_string);
+    return ESP_OK;
+}
+const httpd_uri_t webserver_game_mode_handlers_t::game_mode_info_get_uri = {
+    .uri = "/api/game-mode",
+    .method = HTTP_GET,
+    .handler = game_mode_info_get_handler,
+    .user_ctx = NULL,
+};
+
+esp_err_t webserver_game_mode_handlers_t::game_mode_info_post_handler(httpd_req_t *req)
+{
+    char content[req->content_len + 1];
+    int ret = httpd_req_recv(req, content, req->content_len);
+    if (ret <= 0)
+    {
+        if (ret == HTTPD_SOCK_ERR_TIMEOUT)
+            httpd_resp_send_408(req);
+
+        return ESP_FAIL;
+    }
+
+    content[req->content_len] = '\0';
+    cJSON *root = cJSON_Parse(content);
+    if (!root)
+    {
+        httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "Invalid JSON received.");
+        return ESP_FAIL;
+    }
+
+    cJSON *mode = cJSON_GetObjectItemCaseSensitive(root, "mode");
+
+    game_mode_service_t::replace((GAME_MODE)mode->valueint);
+
+    cJSON_Delete(root);
+    httpd_resp_sendstr(req, "OK");
+    return ESP_OK;
+}
+const httpd_uri_t webserver_game_mode_handlers_t::game_mode_info_post_uri = {
+    .uri = "/api/game-mode",
+    .method = HTTP_POST,
+    .handler = game_mode_info_post_handler,
+    .user_ctx = NULL,
+};

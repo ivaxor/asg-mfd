@@ -7,23 +7,23 @@
 
 esp_err_t webserver_respawn_counter_handlers_t::respawn_counter_info_get_handler(httpd_req_t *req)
 {
-    respawn_counter_info_t info = respawn_counter_service_t::get();
+    respawn_counter_info_t *info = respawn_counter_service_t::get();
 
     cJSON *root = cJSON_CreateObject();
-    cJSON_AddNumberToObject(root, "current_respawn_tokens", info.current_respawn_tokens);
-    cJSON_AddNumberToObject(root, "respawn_tokens", info.respawn_tokens);
+    cJSON_AddNumberToObject(root, "current_respawn_tokens", info->current_respawn_tokens);
+    cJSON_AddNumberToObject(root, "respawn_tokens", info->respawn_tokens);
 
     cJSON *policies = cJSON_AddArrayToObject(root, "policies");
-    for (uint8_t i = 0; i < info.policies_length; i++)
+    for (uint8_t i = 0; i < info->policies_length; i++)
     {
         cJSON *policy = cJSON_CreateObject();
-        cJSON_AddBoolToObject(policy, "enabled", info.policies[i].enabled);
-        cJSON_AddNumberToObject(policy, "priority", info.policies[i].priority);
-        cJSON_AddNumberToObject(policy, "min", info.policies[i].min);
-        cJSON_AddNumberToObject(policy, "max", info.policies[i].max);
+        cJSON_AddBoolToObject(policy, "enabled", info->policies[i].enabled);
+        cJSON_AddNumberToObject(policy, "priority", info->policies[i].priority);
+        cJSON_AddNumberToObject(policy, "min", info->policies[i].min);
+        cJSON_AddNumberToObject(policy, "max", info->policies[i].max);
         cJSON_AddItemToArray(policies, policy);
     }
-    cJSON_AddNumberToObject(root, "policies_length", info.policies_length);
+    cJSON_AddNumberToObject(root, "policies_length", info->policies_length);
 
     const char *json_string = cJSON_Print(root);
     httpd_resp_set_type(req, "application/json");

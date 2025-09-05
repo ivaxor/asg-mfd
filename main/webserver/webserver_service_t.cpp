@@ -10,6 +10,7 @@
 #include "dns_server.h"
 #include "include/webserver_service_t.h"
 #include "include/webserver_static_handlers_t.h"
+#include "include/webserver_game_mode_handlers_t.h"
 #include "include/webserver_respawn_counter_handlers_t.h"
 
 const char *webserver_service_t::TAG = "webserver_service_t";
@@ -100,6 +101,9 @@ httpd_handle_t webserver_service_t::start_webserver()
         httpd_register_uri_handler(server, &webserver_static_handlers_t::main_js_uri);
         httpd_register_uri_handler(server, &webserver_static_handlers_t::styles_css_uri);
         httpd_register_uri_handler(server, &webserver_static_handlers_t::favicon_ico_uri);
+
+        httpd_register_uri_handler(server, &webserver_game_mode_handlers_t::game_mode_info_get_uri);
+        httpd_register_uri_handler(server, &webserver_game_mode_handlers_t::game_mode_info_get_uri);
 
         httpd_register_uri_handler(server, &webserver_respawn_counter_handlers_t::respawn_counter_info_get_uri);
         httpd_register_uri_handler(server, &webserver_respawn_counter_handlers_t::respawn_counter_info_post_uri);

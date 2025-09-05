@@ -3,7 +3,7 @@
 #include "esp_log.h"
 #include "include/button_event_queue_handler_t.h"
 #include "../respawn_counter/include/respawn_counter_service_t.h"
-#include "../game_mode/include/game_mode_t.h"
+#include "../game_mode/include/game_mode_info_t.h"
 #include "../game_mode/include/game_mode_service_t.h"
 
 const char *button_event_queue_handler_t::TAG = "button_event_queue_handler_t";
@@ -36,15 +36,19 @@ void button_event_queue_handler_t::task(void *pvParameter)
         xQueueReceive(queue, &button_event, portMAX_DELAY);
         ESP_LOGI(TAG, "Button event received. GPIO %u. State: %u. Duration: %lli ms", button_event.gpio_num, button_event.state, button_event.duration / 1000);
 
-        GAME_MODE game_mode = game_mode_service_t::get();
-        switch (game_mode)
+        game_mode_info_t *game_mode_info = game_mode_service_t::get();
+        switch (game_mode_info->mode)
         {
         case RESPAWN_COUNTER:
             respawn_counter_service_t::handle_button_event(button_event);
             break;
 
-        default:
-            ESP_LOGE(TAG, "Unknown game mode");
+        case BOMB:
+            // TODO: Implement
+            break;
+
+        case FLAG:
+            // TODO: Implement
             break;
         }
     }
