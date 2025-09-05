@@ -5,15 +5,14 @@
 
 typedef enum
 {
-    DEPRESSED,
-    PRESSED,
-    DOUBLE_CLICK,
-} BUTTON_EVENT_STATE;
+    CLICK,
+    PRESS,
+} BUTTON_EVENT_TYPE;
 
 typedef struct
 {
     uint8_t gpio_num;
-    BUTTON_EVENT_STATE state;
+    BUTTON_EVENT_TYPE type;
     int64_t duration;
 } button_event_t;
 

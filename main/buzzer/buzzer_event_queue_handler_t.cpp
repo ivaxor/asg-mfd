@@ -51,8 +51,6 @@ void buzzer_event_queue_handler_t::task(void *pvParameter)
             if (xQueueReceive(queue, &beep_type, pdMS_TO_TICKS(2000)) == pdTRUE)
                 goto new_beep;
             gpio_set_level(BUZZER_PIN, 0);
-            if (xQueueReceive(queue, &beep_type, pdMS_TO_TICKS(2000)) == pdTRUE)
-                goto new_beep;
             break;
 
         case RESPAWN_TOKEN_DECREMENT:
@@ -61,45 +59,36 @@ void buzzer_event_queue_handler_t::task(void *pvParameter)
             if (xQueueReceive(queue, &beep_type, pdMS_TO_TICKS(300)) == pdTRUE)
                 goto new_beep;
             gpio_set_level(BUZZER_PIN, 0);
-            if (xQueueReceive(queue, &beep_type, pdMS_TO_TICKS(300)) == pdTRUE)
-                goto new_beep;
             break;
 
         case RESPAWN_BATCH:
             ESP_LOGI(TAG, "Playing RESPAWN_BATCH");
-            for (uint8_t i = 0; i < 3; i++)
+            gpio_set_level(BUZZER_PIN, 1);
+            if (xQueueReceive(queue, &beep_type, pdMS_TO_TICKS(300)) == pdTRUE)
+                goto new_beep;
+            gpio_set_level(BUZZER_PIN, 0);
+            if (xQueueReceive(queue, &beep_type, pdMS_TO_TICKS(300)) == pdTRUE)
+                goto new_beep;
+            for (uint8_t i = 0; i < 2; i++)
             {
                 gpio_set_level(BUZZER_PIN, 1);
-                if (xQueueReceive(queue, &beep_type, pdMS_TO_TICKS(300)) == pdTRUE)
+                if (xQueueReceive(queue, &beep_type, pdMS_TO_TICKS(100)) == pdTRUE)
                     goto new_beep;
                 gpio_set_level(BUZZER_PIN, 0);
-                if (xQueueReceive(queue, &beep_type, pdMS_TO_TICKS(300)) == pdTRUE)
+                if (xQueueReceive(queue, &beep_type, pdMS_TO_TICKS(100)) == pdTRUE)
                     goto new_beep;
             }
             break;
 
-        case SETUP_MODE_ENABLED:
-            ESP_LOGI(TAG, "Playing SETUP_MODE_ENABLED");
-            for (uint8_t i = 0; i < 3; i++)
+        case SETUP_MODE:
+            ESP_LOGI(TAG, "Playing SETUP_MODE");
+            for (uint8_t i = 0; i < 6; i++)
             {
                 gpio_set_level(BUZZER_PIN, 1);
-                if (xQueueReceive(queue, &beep_type, pdMS_TO_TICKS(300 - (100 * i))) == pdTRUE)
+                if (xQueueReceive(queue, &beep_type, pdMS_TO_TICKS(100)) == pdTRUE)
                     goto new_beep;
                 gpio_set_level(BUZZER_PIN, 0);
-                if (xQueueReceive(queue, &beep_type, pdMS_TO_TICKS(300 - (100 * i))) == pdTRUE)
-                    goto new_beep;
-            }
-            break;
-
-        case SETUP_MODE_DISABLED:
-            ESP_LOGI(TAG, "Playing SETUP_MODE_DISABLED");
-            for (uint8_t i = 0; i < 3; i++)
-            {
-                gpio_set_level(BUZZER_PIN, 1);
-                if (xQueueReceive(queue, &beep_type, pdMS_TO_TICKS(100 + (100 * i))) == pdTRUE)
-                    goto new_beep;
-                gpio_set_level(BUZZER_PIN, 0);
-                if (xQueueReceive(queue, &beep_type, pdMS_TO_TICKS(100 + (100 * i))) == pdTRUE)
+                if (xQueueReceive(queue, &beep_type, pdMS_TO_TICKS(100)) == pdTRUE)
                     goto new_beep;
             }
             break;

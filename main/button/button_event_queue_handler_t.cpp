@@ -34,7 +34,7 @@ void button_event_queue_handler_t::task(void *pvParameter)
     {
         button_event_t button_event;
         xQueueReceive(queue, &button_event, portMAX_DELAY);
-        ESP_LOGI(TAG, "Button event received. GPIO %u. State: %u. Duration: %lli ms", button_event.gpio_num, button_event.state, button_event.duration / 1000);
+        ESP_LOGI(TAG, "Button event received. GPIO %u. Type: %u. Duration: %lli ms", button_event.gpio_num, button_event.type, button_event.duration / 1000);
 
         game_mode_info_t *game_mode_info = game_mode_service_t::get();
         switch (game_mode_info->mode)

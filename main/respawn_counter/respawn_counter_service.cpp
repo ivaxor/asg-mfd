@@ -63,9 +63,7 @@ void respawn_counter_service_t::task(void *pvParameter)
 
 void respawn_counter_service_t::handle_button_event(button_event_t button_event)
 {
-    ESP_LOGI(TAG, "Button event received. GPIO: %u. State: %u. Duration: %lli ms", button_event.gpio_num, button_event.state, button_event.duration / 1000);
-
-    if (button_event.state != DEPRESSED)
+    if (button_event.type != CLICK)
         return;
 
     switch (setup_mode)
@@ -140,7 +138,7 @@ void respawn_counter_service_t::long_press()
 
     setup_mode = true;
     setup_mode_menu = 0;
-    buzzer_event_queue_handler_t::add_to_queue(SETUP_MODE_ENABLED);
+    buzzer_event_queue_handler_t::add_to_queue(SETUP_MODE);
     draw_on_matrix_display();
 
     // TODO: Implement
@@ -165,7 +163,7 @@ void respawn_counter_service_t::setup_mode_long_press()
     ESP_LOGI(TAG, "Setup mode long press");
 
     setup_mode = false;
-    buzzer_event_queue_handler_t::add_to_queue(SETUP_MODE_DISABLED);
+    buzzer_event_queue_handler_t::add_to_queue(SETUP_MODE);
     draw_on_matrix_display();
 
     // TODO: Implement
