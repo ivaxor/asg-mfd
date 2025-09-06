@@ -22,6 +22,7 @@ private:
     static const uint64_t digits_lower_parts[];
     static const uint64_t special_characters[];
     
+    static SemaphoreHandle_t mutex;
     static max7219_t device;
 
     matrix_display_service_t();

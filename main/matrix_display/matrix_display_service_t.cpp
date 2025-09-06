@@ -45,13 +45,20 @@ const uint64_t matrix_display_service_t::special_characters[] = {
     0x0048241212244800, // REWIND
 };
 max7219_t matrix_display_service_t::device;
+SemaphoreHandle_t matrix_display_service_t::mutex;
 
 void matrix_display_service_t::init()
 {
-    // Configure SPI bus
+    mutex = xSemaphoreCreateMutex();
+    if (mutex == NULL)
+    {
+        ESP_LOGE(TAG, "Failed to create matrix display mutex");
+        return;
+    }
+
     spi_bus_config_t spi_bus_config = {
         .mosi_io_num = PIN_NUM_MOSI,
-        .miso_io_num = -1, // Not used for MAX7219
+        .miso_io_num = -1,
         .sclk_io_num = PIN_NUM_CLK,
         .quadwp_io_num = -1,
         .quadhd_io_num = -1,
@@ -60,7 +67,6 @@ void matrix_display_service_t::init()
     };
     ESP_ERROR_CHECK(spi_bus_initialize(SPI2_HOST, &spi_bus_config, SPI_DMA_CH_AUTO));
 
-    // Configure the MAX7219 device
     device = {
         .digits = 0,
         .cascade_size = NUM_DISPLAYS,
@@ -70,32 +76,52 @@ void matrix_display_service_t::init()
     // Initialize the device descriptor and display chain
     ESP_ERROR_CHECK(max7219_init_desc(&device, SPI2_HOST, MAX7219_MAX_CLOCK_SPEED_HZ, PIN_NUM_CS));
     ESP_ERROR_CHECK(max7219_init(&device));
+    ESP_ERROR_CHECK(max7219_set_brightness(&device, MAX7219_MAX_BRIGHTNESS));
 }
 
 void matrix_display_service_t::uninit()
 {
-    max7219_set_shutdown_mode(&device, true);
-    max7219_free_desc(&device);
-    spi_bus_free(SPI2_HOST);
+    if (xSemaphoreTake(mutex, pdMS_TO_TICKS(portMAX_DELAY)) == pdTRUE)
+    {
+        max7219_set_shutdown_mode(&device, true);
+        max7219_free_desc(&device);
+        spi_bus_free(SPI2_HOST);
+    }
+
+    xSemaphoreGive(mutex);
 }
 
 void matrix_display_service_t::clear(uint8_t display)
 {
-    max7219_draw_image_8x8(&matrix_display_service_t::device, display * 8, (uint8_t *)blank);
+    if (xSemaphoreTake(mutex, pdMS_TO_TICKS(portMAX_DELAY)) == pdTRUE)
+        max7219_draw_image_8x8(&matrix_display_service_t::device, display * 8, (uint8_t *)blank);
+
+    xSemaphoreGive(mutex);
 }
 
 void matrix_display_service_t::clear_all()
 {
-    max7219_clear(&device);
+    if (xSemaphoreTake(mutex, pdMS_TO_TICKS(portMAX_DELAY)) == pdTRUE)
+        max7219_clear(&device);
+
+    xSemaphoreGive(mutex);
 }
 
 void matrix_display_service_t::draw_special_character(uint8_t display, MATRIX_SPECIAL_CHARACTER character)
 {
-    max7219_draw_image_8x8(&matrix_display_service_t::device, display * 8, (uint8_t *)special_characters + character * 8);
+    if (xSemaphoreTake(mutex, pdMS_TO_TICKS(portMAX_DELAY)) == pdTRUE)
+        max7219_draw_image_8x8(&matrix_display_service_t::device, display * 8, (uint8_t *)special_characters + character * 8);
+
+    xSemaphoreGive(mutex);
 }
 
 void matrix_display_service_t::draw_tall_number(uint8_t display1, uint8_t display2, uint8_t number)
 {
-    max7219_draw_image_8x8(&matrix_display_service_t::device, display1 * 8, (uint8_t *)digits_upper_parts + number * 8);
-    max7219_draw_image_8x8(&matrix_display_service_t::device, display2 * 8, (uint8_t *)digits_lower_parts + number * 8);
+    if (xSemaphoreTake(mutex, pdMS_TO_TICKS(portMAX_DELAY)) == pdTRUE)
+    {
+        max7219_draw_image_8x8(&matrix_display_service_t::device, display1 * 8, (uint8_t *)digits_upper_parts + number * 8);
+        max7219_draw_image_8x8(&matrix_display_service_t::device, display2 * 8, (uint8_t *)digits_lower_parts + number * 8);
+    }
+
+    xSemaphoreGive(mutex);
 }
