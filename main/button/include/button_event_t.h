@@ -5,8 +5,8 @@
 
 typedef enum
 {
-    CLICK,
     PRESS,
+    RELEASE,
 } BUTTON_EVENT_TYPE;
 
 typedef struct
@@ -14,6 +14,7 @@ typedef struct
     uint8_t gpio_num;
     BUTTON_EVENT_TYPE type;
     int64_t duration;
+    int64_t timestamp;
 } button_event_t;
 
 #endif

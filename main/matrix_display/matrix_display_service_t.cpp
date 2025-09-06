@@ -38,10 +38,11 @@ const uint64_t matrix_display_service_t::digits_lower_parts[] = {
     0x00fefec0c0c0fefe,
 };
 const uint64_t matrix_display_service_t::special_characters[] = {
-    0x1818187e7e666600,
-    0x0066661818666600,
-    0x0002044850607800,
-    0x0078605048040200,
+    0x1818187e7e666600, // WRENCH
+    0x0002044850607800, // ARROW_UP_RIGHT
+    0x0078605048040200, // ARROW_DOWN_RIGHT
+    0x0000081422400000, // CHECK_MARK
+    0x0048241212244800, // REWIND
 };
 max7219_t matrix_display_service_t::device;
 

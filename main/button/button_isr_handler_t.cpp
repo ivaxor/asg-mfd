@@ -8,7 +8,7 @@
 #include "include/button_isr_handler_t.h"
 #include "include/button_raw_event_queue_handler_t.h"
 
-#define RESPAWN_BUTTON_GPIO GPIO_NUM_0
+#define RESPAWN_BUTTON_PIN GPIO_NUM_0
 
 void IRAM_ATTR button_isr_handler_t::handler(void *arg)
 {
@@ -26,7 +26,7 @@ void IRAM_ATTR button_isr_handler_t::handler(void *arg)
 void button_isr_handler_t::init()
 {
     gpio_config_t io_config = {
-        .pin_bit_mask = (1ULL << RESPAWN_BUTTON_GPIO),
+        .pin_bit_mask = (1ULL << RESPAWN_BUTTON_PIN),
         .mode = GPIO_MODE_INPUT,
         .pull_up_en = GPIO_PULLUP_ENABLE,
         .pull_down_en = GPIO_PULLDOWN_DISABLE,
@@ -35,5 +35,5 @@ void button_isr_handler_t::init()
     ESP_ERROR_CHECK(gpio_config(&io_config));
 
     ESP_ERROR_CHECK(gpio_install_isr_service(0));
-    ESP_ERROR_CHECK(gpio_isr_handler_add(RESPAWN_BUTTON_GPIO, button_isr_handler_t::handler, (void *)RESPAWN_BUTTON_GPIO));
+    ESP_ERROR_CHECK(gpio_isr_handler_add(RESPAWN_BUTTON_PIN, button_isr_handler_t::handler, (void *)RESPAWN_BUTTON_PIN));
 }

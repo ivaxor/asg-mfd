@@ -7,9 +7,10 @@
 typedef enum
 {
     WRENCH,
-    GROUP,
     ARROW_UP_RIGHT,
     ARROW_DOWN_RIGHT,
+    CHECK_MARK,
+    REWIND,
 } MATRIX_SPECIAL_CHARACTER;
 
 class matrix_display_service_t

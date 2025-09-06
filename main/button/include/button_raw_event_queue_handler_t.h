@@ -14,10 +14,10 @@ class button_raw_event_queue_handler_t
 private:
     static const char *TAG;
 
-    static int64_t press_timestamps[GPIO_NUM_MAX];
-    static int64_t click_timestamps[GPIO_NUM_MAX];
+    static int64_t last_valid_event_timestamps[GPIO_NUM_MAX];
+    static int64_t last_press_timestamps[GPIO_NUM_MAX];
     static QueueHandle_t queue;
-    
+
     button_raw_event_queue_handler_t();
 
 public:
