@@ -1,14 +1,9 @@
-#include "driver/spi_master.h"
+#include "driver/sdspi_host.h"
 #include "driver/gpio.h"
 #include "esp_log.h"
 #include "esp_err.h"
 #include "max7219.h"
 #include "include/matrix_display_service_t.h"
-
-#define NUM_DISPLAYS 8
-#define PIN_NUM_CS GPIO_NUM_10
-#define PIN_NUM_MOSI GPIO_NUM_11
-#define PIN_NUM_CLK GPIO_NUM_12
 
 const char *matrix_display_service_t::TAG = "matrix_display_service_t";
 
@@ -56,25 +51,14 @@ void matrix_display_service_t::init()
         return;
     }
 
-    spi_bus_config_t spi_bus_config = {
-        .mosi_io_num = PIN_NUM_MOSI,
-        .miso_io_num = -1,
-        .sclk_io_num = PIN_NUM_CLK,
-        .quadwp_io_num = -1,
-        .quadhd_io_num = -1,
-        .max_transfer_sz = 0,
-        .flags = 0,
-    };
-    ESP_ERROR_CHECK(spi_bus_initialize(SPI2_HOST, &spi_bus_config, SPI_DMA_CH_AUTO));
-
     device = {
         .digits = 0,
-        .cascade_size = NUM_DISPLAYS,
+        .cascade_size = 8,
         .mirrored = true,
     };
 
     // Initialize the device descriptor and display chain
-    ESP_ERROR_CHECK(max7219_init_desc(&device, SPI2_HOST, MAX7219_MAX_CLOCK_SPEED_HZ, PIN_NUM_CS));
+    ESP_ERROR_CHECK(max7219_init_desc(&device, SDSPI_DEFAULT_HOST, MAX7219_MAX_CLOCK_SPEED_HZ, GPIO_NUM_10));
     ESP_ERROR_CHECK(max7219_init(&device));
     ESP_ERROR_CHECK(max7219_set_brightness(&device, MAX7219_MAX_BRIGHTNESS));
 }

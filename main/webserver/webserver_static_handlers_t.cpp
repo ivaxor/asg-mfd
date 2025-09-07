@@ -60,6 +60,21 @@ const httpd_uri_t webserver_static_handlers_t::main_js_uri = {
     .handler = main_js_handler,
 };
 
+extern const char scripts_js_start[] asm("_binary_scripts_js_start");
+extern const char scripts_js_end[] asm("_binary_scripts_js_end");
+esp_err_t webserver_static_handlers_t::scripts_js_handler(httpd_req_t *req)
+{
+    const uint32_t scripts_js_len = scripts_js_end - scripts_js_start;
+    httpd_resp_set_type(req, "application/javascript");
+    httpd_resp_send(req, scripts_js_start, scripts_js_len);
+    return ESP_OK;
+}
+const httpd_uri_t webserver_static_handlers_t::scripts_js_uri = {
+    .uri = "/scripts.js",
+    .method = HTTP_GET,
+    .handler = scripts_js_handler,
+};
+
 extern const char styles_css_start[] asm("_binary_styles_css_start");
 extern const char styles_css_end[] asm("_binary_styles_css_end");
 esp_err_t webserver_static_handlers_t::styles_css_handler(httpd_req_t *req)

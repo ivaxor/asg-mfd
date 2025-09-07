@@ -117,7 +117,7 @@ void respawn_counter_service_t::short_press()
 
     for (uint8_t i = 0; i < info.policies_length; i++)
     {
-        if (info.policies[i].enabled == false)
+        if (info.policies[i].disabled == true)
             continue;
 
         if (info.current_respawn_tokens > info.policies[i].min)
@@ -348,8 +348,25 @@ respawn_counter_info_t *respawn_counter_service_t::get()
     return &info;
 }
 
-void respawn_counter_service_t::replace(respawn_counter_info_t new_info)
+void respawn_counter_service_t::replace(respawn_counter_info_t *new_info)
 {
     delete[] info.policies;
-    info = new_info;
+
+    info = {
+        .respawn_tokens = new_info->respawn_tokens,
+        .current_respawn_tokens = new_info->current_respawn_tokens,
+        .policies = new respawn_counter_policy_t[new_info->policies_length],
+        .policies_length = new_info->policies_length,
+    };
+
+    for (uint8_t i = 0; i < new_info->policies_length; i++)
+    {
+        info.policies[i] = {
+            .priority = new_info->policies[i].priority,
+            .disabled = new_info->policies[i].disabled,
+            .min = new_info->policies[i].min,
+            .max = new_info->policies[i].max,
+            .batch_size = new_info->policies[i].batch_size,
+        };
+    }
 }

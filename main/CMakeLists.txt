@@ -9,6 +9,8 @@ idf_component_register(
         "led/led_heartbeat_service_t.cpp"
         "matrix_display/matrix_display_service_t.cpp"
         "respawn_counter/respawn_counter_service.cpp"
+        "sd_card/sd_card_service_t.cpp"
+        "spi/spi_service_t.cpp"
         "webserver/webserver_game_mode_handlers_t.cpp"
         "webserver/webserver_respawn_counter_handlers_t.cpp"
         "webserver/webserver_service_t.cpp"
@@ -25,8 +27,11 @@ idf_component_register(
         "dns_server"
         "led_strip"
         "max7219"
+        "fatfs"
+        "esp_driver_sdspi"
     EMBED_FILES
         "dist/browser/favicon.ico"
         "dist/browser/index.html"
         "dist/browser/main.js"
+        "dist/browser/scripts.js"
         "dist/browser/styles.css")

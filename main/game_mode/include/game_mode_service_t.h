@@ -19,6 +19,7 @@ private:
 
 public:
     static void init();
+    static void task(void *pvParameter);
     static game_mode_info_t *get();
     static void replace(GAME_MODE new_mode);
 };

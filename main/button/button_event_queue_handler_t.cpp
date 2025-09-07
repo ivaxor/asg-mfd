@@ -42,14 +42,6 @@ void button_event_queue_handler_t::task(void *pvParameter)
         case RESPAWN_COUNTER:
             respawn_counter_service_t::handle_button_event(button_event);
             break;
-
-        case BOMB:
-            // TODO: Implement
-            break;
-
-        case FLAG:
-            // TODO: Implement
-            break;
         }
     }
 }

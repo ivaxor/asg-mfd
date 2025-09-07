@@ -101,6 +101,7 @@ httpd_handle_t webserver_service_t::start_webserver()
 
         ESP_ERROR_CHECK(httpd_register_uri_handler(server, &webserver_static_handlers_t::index_html_uri));
         ESP_ERROR_CHECK(httpd_register_uri_handler(server, &webserver_static_handlers_t::main_js_uri));
+        ESP_ERROR_CHECK(httpd_register_uri_handler(server, &webserver_static_handlers_t::scripts_js_uri));
         ESP_ERROR_CHECK(httpd_register_uri_handler(server, &webserver_static_handlers_t::styles_css_uri));
         ESP_ERROR_CHECK(httpd_register_uri_handler(server, &webserver_static_handlers_t::favicon_ico_uri));
 

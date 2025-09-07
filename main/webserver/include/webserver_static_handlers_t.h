@@ -8,6 +8,7 @@ class webserver_static_handlers_t
 private:    
     static esp_err_t index_html_handler(httpd_req_t *req);
     static esp_err_t main_js_handler(httpd_req_t *req);
+    static esp_err_t scripts_js_handler(httpd_req_t *req);
     static esp_err_t styles_css_handler(httpd_req_t *req);
     static esp_err_t favicon_ico_handler(httpd_req_t *req);
 
@@ -22,6 +23,7 @@ public:
     static const httpd_uri_t cors_uri;
     static const httpd_uri_t index_html_uri;
     static const httpd_uri_t main_js_uri;
+    static const httpd_uri_t scripts_js_uri;
     static const httpd_uri_t styles_css_uri;
     static const httpd_uri_t favicon_ico_uri;
 };

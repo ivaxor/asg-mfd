@@ -15,7 +15,7 @@ typedef enum {
 typedef struct
 {
     uint8_t priority;
-    bool enabled;
+    bool disabled;
     uint16_t min;
     uint16_t max;
     uint16_t batch_size;

@@ -20,8 +20,8 @@ void led_heartbeat_service_t::init()
     };
 
     led_strip_config_t strip_config = {
-        .strip_gpio_num = 1,
-        .max_leds = GPIO_NUM_38,
+        .strip_gpio_num = GPIO_NUM_38,
+        .max_leds = 1,
         .flags = {
             .invert_out = false,
         },
@@ -40,10 +40,10 @@ void led_heartbeat_service_t::task(void *pvParameter)
 
     while (1)
     {
-        ESP_ERROR_CHECK(led_strip_set_pixel(led_strip, 0, intensity, intensity, intensity));
+        ESP_ERROR_CHECK(led_strip_set_pixel(led_strip, 0, 0, intensity, 0));
         ESP_ERROR_CHECK(led_strip_refresh(led_strip));
 
-        vTaskDelay(pdMS_TO_TICKS(10));
+        vTaskDelay(pdMS_TO_TICKS(50));
 
         if (intensity == 255)
             fade = true;
@@ -52,8 +52,8 @@ void led_heartbeat_service_t::task(void *pvParameter)
             fade = false;
 
         if (fade == false)
-            intensity++;
+            intensity += 5;
         else
-            intensity--;
+            intensity -= 5;
     }
 }
