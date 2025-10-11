@@ -7,6 +7,7 @@
 #include "include/respawn_counter_service_t.h"
 #include "../buzzer/include/buzzer_event_queue_handler_t.h"
 #include "../matrix_display/include/matrix_display_service_t.h"
+#include "../sd_card/include/sd_card_service_t.h"
 
 #define RESPAWN_BUTTON_LED_PIN GPIO_NUM_2
 #define RESPAWN_BUTTON_PIN GPIO_NUM_0
@@ -219,6 +220,7 @@ void respawn_counter_service_t::setup_mode_long_press()
         buzzer_event_queue_handler_t::add_to_queue(SETUP_MODE);
         render_setup_on_matrix_display();
         render_info_on_matrix_display();
+        sd_card_service_t::write_respawn_counter_info(&info);
         break;
 
     case TOKENS_INCREASE:
@@ -256,6 +258,7 @@ void respawn_counter_service_t::setup_mode_long_press()
         buzzer_event_queue_handler_t::add_to_queue(SETUP_MODE);
         render_setup_on_matrix_display();
         render_info_on_matrix_display();
+        sd_card_service_t::write_respawn_counter_info(&info);
         break;
     }
 }

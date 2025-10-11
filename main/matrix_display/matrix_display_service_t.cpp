@@ -58,7 +58,7 @@ void matrix_display_service_t::init()
     };
 
     // Initialize the device descriptor and display chain
-    ESP_ERROR_CHECK(max7219_init_desc(&device, SDSPI_DEFAULT_HOST, MAX7219_MAX_CLOCK_SPEED_HZ, GPIO_NUM_10));
+    ESP_ERROR_CHECK(max7219_init_desc(&device, SPI2_HOST, MAX7219_MAX_CLOCK_SPEED_HZ, GPIO_NUM_10));
     ESP_ERROR_CHECK(max7219_init(&device));
     ESP_ERROR_CHECK(max7219_set_brightness(&device, MAX7219_MAX_BRIGHTNESS));
 }

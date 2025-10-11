@@ -11,10 +11,12 @@
 const char *sd_card_service_t::TAG = "sd_card_service_t";
 const char *sd_card_service_t::respawn_counter_info_file_path = MOUNT_POINT "/respawn_counter_info.json";
 sdmmc_card_t *sd_card_service_t::card;
+bool sd_card_service_t::card_initialized = false;
 
 void sd_card_service_t::init()
 {
     sdmmc_host_t host = SDSPI_HOST_DEFAULT();
+    // Doesn't work on full speed. Forced to half of original
     host.max_freq_khz = SDMMC_FREQ_DEFAULT / 2;
 
     sdspi_device_config_t slot_config = SDSPI_DEVICE_CONFIG_DEFAULT();
@@ -29,14 +31,24 @@ void sd_card_service_t::init()
 
     ESP_LOGI(TAG, "Mounting SD card file system");
 
-    ESP_ERROR_CHECK(esp_vfs_fat_sdspi_mount(MOUNT_POINT, &host, &slot_config, &mount_config, &card));
+    esp_err_t err = esp_vfs_fat_sdspi_mount(MOUNT_POINT, &host, &slot_config, &mount_config, &card);
+    if (err != ESP_OK)
+    {
+        ESP_ERROR_CHECK_WITHOUT_ABORT(err);
+        return;
+    }
+
     sdmmc_card_print_info(stdout, card);
+    card_initialized = true;
 
     ESP_LOGI(TAG, "SD card file system mounted");
 }
 
 respawn_counter_info_t *sd_card_service_t::read_respawn_counter_info()
 {
+    if (!card_initialized)
+        return NULL;
+
     FILE *file = fopen(respawn_counter_info_file_path, "r");
     if (!file)
     {
@@ -114,6 +126,9 @@ respawn_counter_info_t *sd_card_service_t::read_respawn_counter_info()
 
 void sd_card_service_t::write_respawn_counter_info(respawn_counter_info_t *info)
 {
+    if (!card_initialized)
+        return;
+
     FILE *file = fopen(respawn_counter_info_file_path, "w");
     if (!file)
     {
