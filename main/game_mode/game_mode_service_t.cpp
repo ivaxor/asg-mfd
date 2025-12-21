@@ -13,6 +13,8 @@ TaskHandle_t game_mode_service_t::respawn_counter_task;
 
 void game_mode_service_t::init()
 {
+    ESP_LOGI(TAG, "Initializing");
+    
     GAME_MODE default_game_mode = RESPAWN_COUNTER;
     replace_init_new(default_game_mode);
 }

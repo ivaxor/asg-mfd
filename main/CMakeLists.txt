@@ -1,9 +1,6 @@
 idf_component_register(
     SRCS
         "main.cpp"
-        "button/button_event_queue_handler_t.cpp"
-        "button/button_isr_handler_t.cpp"
-        "button/button_raw_event_queue_handler_t.cpp"
         "buzzer/buzzer_event_queue_handler_t.cpp"
         "game_mode/game_mode_service_t.cpp"
         "led/led_heartbeat_service_t.cpp"
@@ -29,6 +26,8 @@ idf_component_register(
         "max7219"
         "fatfs"
         "esp_driver_sdspi"
+        "led_strip"
+        "button"
     EMBED_FILES
         "dist/browser/favicon.ico"
         "dist/browser/index.html"

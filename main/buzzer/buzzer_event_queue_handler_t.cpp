@@ -5,13 +5,15 @@
 #include "esp_log.h"
 #include "include/buzzer_event_queue_handler_t.h"
 
-#define BUZZER_PIN GPIO_NUM_4
+#define BUZZER_PIN GPIO_NUM_4 
 
 const char *buzzer_event_queue_handler_t::TAG = "buzzer_event_queue_handler_t";
 QueueHandle_t buzzer_event_queue_handler_t::queue;
 
 void buzzer_event_queue_handler_t::init()
 {
+    ESP_LOGI(TAG, "Initializing");
+    
     gpio_set_direction(BUZZER_PIN, GPIO_MODE_OUTPUT);
     gpio_set_level(BUZZER_PIN, 0);
 

@@ -3,14 +3,16 @@
 #include "driver/gpio.h"
 #include "esp_log.h"
 #include "esp_err.h"
+#include "button_gpio.h"
+#include "iot_button.h"
 #include "include/respawn_counter_info_t.h"
 #include "include/respawn_counter_service_t.h"
 #include "../buzzer/include/buzzer_event_queue_handler_t.h"
 #include "../matrix_display/include/matrix_display_service_t.h"
 #include "../sd_card/include/sd_card_service_t.h"
 
-#define RESPAWN_BUTTON_LED_PIN GPIO_NUM_2
-#define RESPAWN_BUTTON_PIN GPIO_NUM_0
+#define RESPAWN_BUTTON_LED_PIN GPIO_NUM_5
+#define RESPAWN_BUTTON_SWITCH_PIN GPIO_NUM_0
 
 const char *respawn_counter_service_t::TAG = "respawn_counter_service_t";
 respawn_counter_info_t respawn_counter_service_t::info;
@@ -21,6 +23,8 @@ respawn_counter_info_t respawn_counter_service_t::setup_mode_info;
 
 void respawn_counter_service_t::init()
 {
+    ESP_LOGI(TAG, "Initializing");
+
     setup_mode = false;
 
     info.respawn_tokens = 111;
@@ -29,6 +33,23 @@ void respawn_counter_service_t::init()
     info.policies_length = 0;
 
     gpio_set_direction(RESPAWN_BUTTON_LED_PIN, GPIO_MODE_OUTPUT);
+
+    button_config_t button_config = {
+        .long_press_time = 5000,
+        .short_press_time = 25,
+    };
+
+    button_gpio_config_t button_gpio_config = {
+        .gpio_num = RESPAWN_BUTTON_SWITCH_PIN,
+        .active_level = 0,
+        .enable_power_save = false,
+    };
+
+    button_handle_t button_handle = NULL;
+    ESP_ERROR_CHECK(iot_button_new_gpio_device(&button_config, &button_gpio_config, &button_handle));
+
+    iot_button_register_cb(button_handle, BUTTON_SINGLE_CLICK, NULL, handle_single_click, NULL);
+    iot_button_register_cb(button_handle, BUTTON_LONG_PRESS_START, NULL, handle_long_click, NULL);
 }
 
 void respawn_counter_service_t::uninit()
@@ -74,30 +95,20 @@ void respawn_counter_service_t::task(void *pvParameter)
     }
 }
 
-void respawn_counter_service_t::handle_button_event(button_event_t button_event)
+void respawn_counter_service_t::handle_single_click(void *arg, void *usr_data)
 {
-    if (button_event.gpio_num != RESPAWN_BUTTON_PIN)
-        return;
+    if (setup_mode)
+        setup_mode_short_press();
+    else
+        short_press();
+}
 
-    if (button_event.type != RELEASE)
-        return;
-
-    switch (setup_mode)
-    {
-    case false:
-        if (button_event.duration <= 5000000)
-            short_press();
-        else
-            long_press();
-        break;
-
-    case true:
-        if (button_event.duration <= 1000000)
-            setup_mode_short_press();
-        else
-            setup_mode_long_press();
-        break;
-    }
+void respawn_counter_service_t::handle_long_click(void *arg, void *usr_data)
+{
+    if (setup_mode)
+        setup_mode_long_press();
+    else
+        long_press();
 }
 
 void respawn_counter_service_t::short_press()

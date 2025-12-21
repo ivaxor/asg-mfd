@@ -1,6 +1,5 @@
 #include "freertos/FreeRTOS.h"
 #include "respawn_counter_info_t.h"
-#include "../../button/include/button_event_t.h"
 
 #ifndef RESPAWN_COUNTER_SERVICE_H
 #define RESPAWN_COUNTER_SERVICE_H
@@ -29,7 +28,8 @@ public:
     static void init();
     static void uninit();
     static void task(void *pvParameter);
-    static void handle_button_event(button_event_t button_event);
+    static void handle_single_click(void *arg, void *usr_data);
+    static void handle_long_click(void *arg, void *usr_data);
     static respawn_counter_info_t *get();
     static void replace(respawn_counter_info_t *new_info);
 };
