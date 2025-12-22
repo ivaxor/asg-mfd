@@ -4,24 +4,59 @@ on:
   push:
     branches:
       - master
-
 jobs:
-  build_and_release:
+  build_frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: './main_front/package-lock.json'
+
+      - name: Install and Build Angular
+        working-directory: ./main_front
+        run: |
+          npm install
+          npm run build
+
+      - name: Upload Frontend Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: main/dist/browser/
+
+  build_firmware:
+    needs: build_frontend
     runs-on: ubuntu-latest
     container: espressif/idf:release-v5.5
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
-      - name: Build Project
+
+      - name: Download Frontend Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: main/dist/browser/
+
+      - name: Build ESP-IDF
         shell: bash
         run: |
+          git config --global --add safe.directory /__w/${{ github.event.repository.name }}/${{ github.event.repository.name }}
           . $IDF_PATH/export.sh
+          # Reconfigure is vital so CMake glob sees the downloaded dist files
+          idf.py reconfigure
           idf.py build
+
       - name: Generate Release Tag
         id: tag
         run: echo "release_tag=build-$(date +'%Y%m%d%H%M%S')" >> $GITHUB_OUTPUT
+        
       - name: Create Release and Upload Assets
         uses: softprops/action-gh-release@v2
         with:
