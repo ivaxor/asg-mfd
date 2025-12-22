@@ -2,10 +2,10 @@
 #include "freertos/task.h"
 #include "esp_log.h"
 #include "esp_timer.h"
-#include "include/game_mode_service_t.h"
-#include "../respawn_counter/include/respawn_counter_service_t.h"
-#include "../matrix_display/include/matrix_display_service_t.h"
-#include "../sd_card/include/sd_card_service_t.h"
+#include "include/game_mode_service_t.hpp"
+#include "../respawn_counter/include/respawn_counter_service_t.hpp"
+#include "../matrix_display/include/matrix_display_service_t.hpp"
+#include "../sd_card/include/sd_card_service_t.hpp"
 
 const char *game_mode_service_t::TAG = "game_mode_service_t";
 game_mode_info_t game_mode_service_t::info;

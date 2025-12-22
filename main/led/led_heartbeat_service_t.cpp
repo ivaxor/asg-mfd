@@ -5,7 +5,7 @@
 #include "esp_timer.h"
 #include "led_strip.h"
 #include "led_strip_rmt.h"
-#include "include/led_heartbeat_service_t.h"
+#include "include/led_heartbeat_service_t.hpp"
 
 const char *led_heartbeat_service_t::TAG = "led_heartbeat_service_t";
 const uint8_t led_heartbeat_service_t::MAX_COLOR_VALUE = 255;

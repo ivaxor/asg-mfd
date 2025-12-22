@@ -2,9 +2,9 @@
 #include "freertos/task.h"
 #include "esp_http_server.h"
 #include "cJSON.h"
-#include "include/webserver_respawn_counter_handlers_t.h"
-#include "include/webserver_static_handlers_t.h"
-#include "../respawn_counter/include/respawn_counter_service_t.h"
+#include "include/webserver_respawn_counter_handlers_t.hpp"
+#include "include/webserver_static_handlers_t.hpp"
+#include "../respawn_counter/include/respawn_counter_service_t.hpp"
 
 const httpd_uri_t webserver_respawn_counter_handlers_t::respawn_counter_info_options_uri = {
     .uri = "/api/respawn-counter",

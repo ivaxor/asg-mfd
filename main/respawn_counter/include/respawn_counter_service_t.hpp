@@ -1,5 +1,5 @@
 #include "freertos/FreeRTOS.h"
-#include "respawn_counter_info_t.h"
+#include "respawn_counter_info_t.hpp"
 
 #ifndef RESPAWN_COUNTER_SERVICE_H
 #define RESPAWN_COUNTER_SERVICE_H

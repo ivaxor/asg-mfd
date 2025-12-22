@@ -4,7 +4,7 @@
 #include "esp_log.h"
 #include "esp_err.h"
 #include "cJSON.h"
-#include "include/sd_card_service_t.h"
+#include "include/sd_card_service_t.hpp"
 
 #define MOUNT_POINT "/sdcard"
 

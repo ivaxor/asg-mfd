@@ -1,0 +1,15 @@
+{
+    "idf.portWin": "COM4",
+    "idf.flashType": "UART",
+     "files.associations": {
+        "regex": "cpp",
+        "xiosbase": "cpp"
+    },
+    "cSpell.words": [
+        "respawn",
+        "ESP_LOGD",
+        "ESP_LOGI",
+        "ESP_LOGW",
+        "ESP_LOGE"
+    ]
+}

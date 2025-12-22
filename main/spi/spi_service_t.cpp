@@ -1,6 +1,6 @@
 #include "driver/sdspi_host.h"
 #include "driver/spi_common.h"
-#include "include/spi_service_t.h"
+#include "include/spi_service_t.hpp"
 
 void spi_service_t::init()
 {

@@ -1,5 +1,5 @@
 #include "freertos/FreeRTOS.h"
-#include "game_mode_info_t.h"
+#include "game_mode_info_t.hpp"
 
 #ifndef GAME_MODE_SERVICE_H
 #define GAME_MODE_SERVICE_H

@@ -1,6 +1,6 @@
 #include "freertos/FreeRTOS.h"
 #include "sdmmc_cmd.h"
-#include "../../respawn_counter/include/respawn_counter_info_t.h"
+#include "../../respawn_counter/include/respawn_counter_info_t.hpp"
 
 #ifndef SD_CARD_SERVICE_H
 #define SD_CARD_SERVICE_H

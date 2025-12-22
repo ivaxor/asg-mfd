@@ -4,12 +4,12 @@
 #include "esp_log.h"
 #include "esp_err.h"
 #include "nvs_flash.h"
-#include "buzzer/include/buzzer_event_queue_handler_t.h"
-#include "game_mode/include/game_mode_service_t.h"
-#include "led/include/led_heartbeat_service_t.h"
-#include "sd_card/include/sd_card_service_t.h"
-#include "spi/include/spi_service_t.h"
-#include "webserver/include/webserver_service_t.h"
+#include "buzzer/include/buzzer_event_queue_handler_t.hpp"
+#include "game_mode/include/game_mode_service_t.hpp"
+#include "led/include/led_heartbeat_service_t.hpp"
+#include "sd_card/include/sd_card_service_t.hpp"
+#include "spi/include/spi_service_t.hpp"
+#include "webserver/include/webserver_service_t.hpp"
 
 static const char *TAG = "app_main";
 

@@ -3,7 +3,7 @@
 #include "esp_log.h"
 #include "esp_err.h"
 #include "max7219.h"
-#include "include/matrix_display_service_t.h"
+#include "include/matrix_display_service_t.hpp"
 
 const char *matrix_display_service_t::TAG = "matrix_display_service_t";
 

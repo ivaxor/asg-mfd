@@ -8,10 +8,10 @@
 #include "esp_netif.h"
 #include "esp_http_server.h"
 #include "dns_server.h"
-#include "include/webserver_service_t.h"
-#include "include/webserver_static_handlers_t.h"
-#include "include/webserver_game_mode_handlers_t.h"
-#include "include/webserver_respawn_counter_handlers_t.h"
+#include "include/webserver_service_t.hpp"
+#include "include/webserver_static_handlers_t.hpp"
+#include "include/webserver_game_mode_handlers_t.hpp"
+#include "include/webserver_respawn_counter_handlers_t.hpp"
 
 const char *webserver_service_t::TAG = "webserver_service_t";
 

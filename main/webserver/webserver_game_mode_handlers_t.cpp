@@ -3,9 +3,9 @@
 #include "esp_http_server.h"
 #include "esp_timer.h"
 #include "cJSON.h"
-#include "include/webserver_game_mode_handlers_t.h"
-#include "include/webserver_static_handlers_t.h"
-#include "../game_mode/include/game_mode_service_t.h"
+#include "include/webserver_game_mode_handlers_t.hpp"
+#include "include/webserver_static_handlers_t.hpp"
+#include "../game_mode/include/game_mode_service_t.hpp"
 
 const httpd_uri_t webserver_game_mode_handlers_t::game_mode_info_options_uri = {
     .uri = "/api/game-mode",

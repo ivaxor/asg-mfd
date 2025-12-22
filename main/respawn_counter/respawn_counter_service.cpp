@@ -5,11 +5,11 @@
 #include "esp_err.h"
 #include "button_gpio.h"
 #include "iot_button.h"
-#include "include/respawn_counter_info_t.h"
-#include "include/respawn_counter_service_t.h"
-#include "../buzzer/include/buzzer_event_queue_handler_t.h"
-#include "../matrix_display/include/matrix_display_service_t.h"
-#include "../sd_card/include/sd_card_service_t.h"
+#include "include/respawn_counter_info_t.hpp"
+#include "include/respawn_counter_service_t.hpp"
+#include "../buzzer/include/buzzer_event_queue_handler_t.hpp"
+#include "../matrix_display/include/matrix_display_service_t.hpp"
+#include "../sd_card/include/sd_card_service_t.hpp"
 
 #define RESPAWN_BUTTON_LED_PIN GPIO_NUM_5
 #define RESPAWN_BUTTON_SWITCH_PIN GPIO_NUM_0

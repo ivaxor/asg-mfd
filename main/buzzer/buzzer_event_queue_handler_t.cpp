@@ -3,7 +3,7 @@
 #include "freertos/queue.h"
 #include "driver/gpio.h"
 #include "esp_log.h"
-#include "include/buzzer_event_queue_handler_t.h"
+#include "include/buzzer_event_queue_handler_t.hpp"
 
 #define BUZZER_PIN GPIO_NUM_4 
 

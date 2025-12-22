@@ -2,7 +2,7 @@
 #include "freertos/task.h"
 #include "esp_http_server.h"
 #include "cJSON.h"
-#include "include/webserver_static_handlers_t.h"
+#include "include/webserver_static_handlers_t.hpp"
 
 esp_err_t webserver_static_handlers_t::http_404_error_handler(httpd_req_t *req, httpd_err_code_t err)
 {
