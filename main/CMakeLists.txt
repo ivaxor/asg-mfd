@@ -1,36 +1,19 @@
+file(GLOB_RECURSE SRCS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*.cpp")
+file(GLOB_RECURSE EMBED_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "dist/browser/*.*")
+
 idf_component_register(
     SRCS
-        "main.cpp"
-        "buzzer/buzzer_event_queue_handler_t.cpp"
-        "game_mode/game_mode_service_t.cpp"
-        "led/led_heartbeat_service_t.cpp"
-        "matrix_display/matrix_display_service_t.cpp"
-        "respawn_counter/respawn_counter_service.cpp"
-        "sd_card/sd_card_service_t.cpp"
-        "spi/spi_service_t.cpp"
-        "webserver/webserver_game_mode_handlers_t.cpp"
-        "webserver/webserver_respawn_counter_handlers_t.cpp"
-        "webserver/webserver_service_t.cpp"
-        "webserver/webserver_static_handlers_t.cpp"
+        ${SRCS}
     REQUIRES
         "freertos"
         "driver"
-        "json"
         "nvs_flash"
         "esp_wifi"
         "esp_event"
         "esp_timer"
         "esp_http_server"
         "dns_server"
-        "led_strip"
-        "max7219"
-        "fatfs"
+        "fatfs" # esp_vfs_fat
         "esp_driver_sdspi"
-        "led_strip"
-        "button"
     EMBED_FILES
-        "dist/browser/favicon.ico"
-        "dist/browser/index.html"
-        "dist/browser/main.js"
-        "dist/browser/scripts.js"
-        "dist/browser/styles.css")
+        ${EMBED_FILES})
