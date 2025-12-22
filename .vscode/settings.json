@@ -6,10 +6,11 @@
         "xiosbase": "cpp"
     },
     "cSpell.words": [
-        "respawn",
         "ESP_LOGD",
+        "ESP_LOGE",
         "ESP_LOGI",
         "ESP_LOGW",
-        "ESP_LOGE"
+        "espressif",
+        "respawn"
     ]
 }

@@ -1,0 +1,35 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build_and_release:
+    runs-on: ubuntu-latest
+    container: espressif/idf:latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+      - name: Build Project
+        shell: bash
+        run: |
+          . $IDF_PATH/export.sh
+          idf.py build
+      - name: Generate Release Tag
+        id: tag
+        run: echo "release_tag=build-$(date +'%Y%m%d%H%M%S')" >> $GITHUB_OUTPUT
+      - name: Create Release and Upload Assets
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.release_tag }}
+          name: Release ${{ steps.tag.outputs.release_tag }}
+          files: |
+            build/bootloader/bootloader.bin
+            build/partition_table/partition-table.bin
+            build/*.bin
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
