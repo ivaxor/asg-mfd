@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+
 jobs:
   build_frontend:
     runs-on: ubuntu-latest
@@ -49,19 +50,21 @@ jobs:
         run: |
           git config --global --add safe.directory /__w/${{ github.event.repository.name }}/${{ github.event.repository.name }}
           . $IDF_PATH/export.sh
-          # Reconfigure is vital so CMake glob sees the downloaded dist files
           idf.py reconfigure
           idf.py build
 
-      - name: Generate Release Tag
-        id: tag
-        run: echo "release_tag=$(date +'%Y/%m/%d %H:%M:%S')" >> $GITHUB_OUTPUT
+      - name: Generate Release Info
+        id: info
+        shell: bash
+        run: |
+          echo "tag=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_OUTPUT
+          echo "name=$(date +'%Y/%m/%d %H:%M:%S')" >> $GITHUB_OUTPUT
         
       - name: Create Release and Upload Assets
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.tag.outputs.release_tag }}
-          name: ${{ steps.tag.outputs.release_tag }}
+          tag_name: ${{ steps.info.outputs.tag }}
+          name: ${{ steps.info.outputs.name }}
           files: |
             build/bootloader/bootloader.bin
             build/partition_table/partition-table.bin
