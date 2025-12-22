@@ -15,5 +15,8 @@ idf_component_register(
         "dns_server"
         "fatfs" # esp_vfs_fat
         "esp_driver_sdspi"
+        "max7219"
+        "esp_driver_spi" # max7219 dependency
+        "esp_driver_gpio" # max7219 dependency
     EMBED_FILES
         ${EMBED_FILES})
