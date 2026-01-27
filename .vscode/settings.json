@@ -1,5 +1,5 @@
 {
-    "idf.portWin": "COM4",
+    "idf.portWin": "COM8",
     "idf.flashType": "UART",
      "files.associations": {
         "regex": "cpp",

@@ -5,6 +5,8 @@
 #include "max7219.h"
 #include "include/matrix_display_service_t.hpp"
 
+#define MATRIX_DISPLAY_CS_PIN GPIO_NUM_0
+
 const char *matrix_display_service_t::TAG = "matrix_display_service_t";
 
 const uint8_t matrix_display_service_t::blank[8] = {};
@@ -60,7 +62,7 @@ void matrix_display_service_t::init()
     };
 
     // Initialize the device descriptor and display chain
-    ESP_ERROR_CHECK(max7219_init_desc(&device, SPI2_HOST, MAX7219_MAX_CLOCK_SPEED_HZ, GPIO_NUM_39));
+    ESP_ERROR_CHECK(max7219_init_desc(&device, SPI2_HOST, MAX7219_MAX_CLOCK_SPEED_HZ, MATRIX_DISPLAY_CS_PIN));
     ESP_ERROR_CHECK(max7219_init(&device));
     ESP_ERROR_CHECK(max7219_set_brightness(&device, MAX7219_MAX_BRIGHTNESS));
 }

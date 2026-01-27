@@ -12,7 +12,7 @@
 #include "../sd_card/include/sd_card_service_t.hpp"
 
 #define RESPAWN_BUTTON_LED_PIN GPIO_NUM_5
-#define RESPAWN_BUTTON_SWITCH_PIN GPIO_NUM_0
+#define RESPAWN_BUTTON_SWITCH_PIN GPIO_NUM_1
 
 const char *respawn_counter_service_t::TAG = "respawn_counter_service_t";
 respawn_counter_info_t respawn_counter_service_t::info;

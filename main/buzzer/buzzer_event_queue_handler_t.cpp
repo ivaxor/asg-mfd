@@ -5,7 +5,7 @@
 #include "esp_log.h"
 #include "include/buzzer_event_queue_handler_t.hpp"
 
-#define BUZZER_PIN GPIO_NUM_4 
+#define BUZZER_PIN GPIO_NUM_4
 
 const char *buzzer_event_queue_handler_t::TAG = "buzzer_event_queue_handler_t";
 QueueHandle_t buzzer_event_queue_handler_t::queue;
