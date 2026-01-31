@@ -6,6 +6,7 @@
 typedef enum
 {
     RESPAWN_COUNTER,
+    FLAG,
 } GAME_MODE;
 
 typedef struct

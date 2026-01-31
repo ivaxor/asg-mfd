@@ -11,6 +11,7 @@ private:
 
     static game_mode_info_t info;
     static TaskHandle_t respawn_counter_task;
+    static TaskHandle_t led_strip_task;
 
     static void replace_cleanup();
     static void replace_init_new(GAME_MODE new_mode);

@@ -1,10 +1,10 @@
 #include "freertos/FreeRTOS.h"
 #include "led_strip_rmt.h"
 
-#ifndef LED_HEARTBEAT_SERVICE_H
-#define LED_HEARTBEAT_SERVICE_H
+#ifndef LED_STRIP_SERVICE_H
+#define LED_STRIP_SERVICE_H
 
-class led_heartbeat_service_t
+class led_strip_service_t
 {
 private:
     static const char *TAG;
@@ -14,7 +14,7 @@ private:
     static led_strip_handle_t led_strip;
     static led_strip_handle_t led;
 
-    led_heartbeat_service_t();
+    led_strip_service_t();
     static uint8_t calculate_r(uint16_t step);
     static uint8_t calculate_g(uint16_t step);
     static uint8_t calculate_b(uint16_t step);
@@ -24,4 +24,4 @@ public:
     static void task(void *pvParameter);
 };
 
-#endif // LED_HEARTBEAT_SERVICE_H
+#endif // LED_STRIP_SERVICE_H

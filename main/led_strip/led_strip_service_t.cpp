@@ -5,15 +5,17 @@
 #include "esp_timer.h"
 #include "led_strip.h"
 #include "led_strip_rmt.h"
-#include "include/led_heartbeat_service_t.hpp"
+#include "include/led_strip_service_t.hpp"
 
-const char *led_heartbeat_service_t::TAG = "led_heartbeat_service_t";
-const uint8_t led_heartbeat_service_t::MAX_COLOR_VALUE = 255;
-const uint16_t led_heartbeat_service_t::CYCLE_LENGTH = 6 * MAX_COLOR_VALUE;
-led_strip_handle_t led_heartbeat_service_t::led;
-led_strip_handle_t led_heartbeat_service_t::led_strip;
+#define LED_STRIP_PIN GPIO_NUM_41
+#define LED_STRIP_LEDS 16
 
-void led_heartbeat_service_t::init()
+const char *led_strip_service_t::TAG = "led_strip_service_t";
+const uint8_t led_strip_service_t::MAX_COLOR_VALUE = 255;
+const uint16_t led_strip_service_t::CYCLE_LENGTH = 6 * MAX_COLOR_VALUE;
+led_strip_handle_t led_strip_service_t::led_strip;
+
+void led_strip_service_t::init()
 {
     ESP_LOGI(TAG, "Initializing");
 
@@ -25,17 +27,9 @@ void led_heartbeat_service_t::init()
         },
     };
 
-    led_strip_config_t led_config = {
-        .strip_gpio_num = GPIO_NUM_38,
-        .max_leds = 1,
-        .flags = {
-            .invert_out = false,
-        },
-    };
-
     led_strip_config_t led_strip_config = {
-        .strip_gpio_num = GPIO_NUM_40,
-        .max_leds = 60,
+        .strip_gpio_num = LED_STRIP_PIN,
+        .max_leds = LED_STRIP_LEDS,
         .led_model = LED_MODEL_WS2812,
         .color_component_format = LED_STRIP_COLOR_COMPONENT_FMT_RGB,
         .flags = {
@@ -43,58 +37,36 @@ void led_heartbeat_service_t::init()
         },
     };
 
-    ESP_ERROR_CHECK(led_strip_new_rmt_device(&led_config, &rmt_config, &led));
-    //ESP_ERROR_CHECK(led_strip_new_rmt_device(&led_strip_config, &rmt_config, &led_strip));
-
-    ESP_ERROR_CHECK(led_strip_clear(led));
-    //ESP_ERROR_CHECK(led_strip_clear(led_strip));
+    ESP_ERROR_CHECK(led_strip_new_rmt_device(&led_strip_config, &rmt_config, &led_strip));
+    ESP_ERROR_CHECK(led_strip_clear(led_strip));
 }
 
-void led_heartbeat_service_t::task(void *pvParameter)
+void led_strip_service_t::task(void *pvParameter)
 {
     ESP_LOGI(TAG, "Starting task");
 
-    bool fade = false;
-    uint8_t intensity = 0;
-
-    //uint16_t step = 0;
+    uint16_t step = 0;
 
     while (1)
     {
-        ESP_ERROR_CHECK(led_strip_set_pixel(led, 0, 0, intensity, 0));
-        ESP_ERROR_CHECK(led_strip_refresh(led));
-
-        /*
-        for (uint8_t led = 0; led < 60; led++)
+        for (uint8_t led = 0; led < LED_STRIP_LEDS; led++)
         {
             ESP_ERROR_CHECK(led_strip_set_pixel(
                 led_strip,
                 led,
-                calculate_r(step + led * 16),
-                calculate_g(step + led * 16),
-                calculate_b(step + led * 16)));
+                calculate_r(step + led * 4),
+                calculate_g(step + led * 4),
+                calculate_b(step + led * 4)));
         }
         ESP_ERROR_CHECK(led_strip_refresh(led_strip));
-        */
 
-        vTaskDelay(pdMS_TO_TICKS(50));
+        vTaskDelay(pdMS_TO_TICKS(10));
 
-        if (intensity == 255)
-            fade = true;
-
-        if (intensity == 0)
-            fade = false;
-
-        if (fade == false)
-            intensity += 5;
-        else
-            intensity -= 5;
-
-        //step++;
+        step += 1;
     }
 }
 
-uint8_t led_heartbeat_service_t::calculate_r(uint16_t step)
+uint8_t led_strip_service_t::calculate_r(uint16_t step)
 {
     step %= CYCLE_LENGTH;
 
@@ -110,7 +82,7 @@ uint8_t led_heartbeat_service_t::calculate_r(uint16_t step)
     return MAX_COLOR_VALUE;
 }
 
-uint8_t led_heartbeat_service_t::calculate_g(uint16_t step)
+uint8_t led_strip_service_t::calculate_g(uint16_t step)
 {
     step %= CYCLE_LENGTH;
 
@@ -127,7 +99,7 @@ uint8_t led_heartbeat_service_t::calculate_g(uint16_t step)
     return 0;
 }
 
-uint8_t led_heartbeat_service_t::calculate_b(uint16_t step)
+uint8_t led_strip_service_t::calculate_b(uint16_t step)
 {
     step %= CYCLE_LENGTH;
 
