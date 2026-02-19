@@ -1,6 +1,10 @@
 # AirSoft game multi functional device
 
-## Prerequisite
+## Hardware prerequisite
+1. [Wemos Lolin S3 Pro](https://www.wemos.cc/en/latest/s3/s3_pro.html)
+2. [ASG-MFD PCB board](https://oshwlab.com/saskiuhia/asg-mfd) (optional, can be replaced by breadboard)
+
+## Software prerequisite
 1. [ESP-IDF Installer](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/get-started/windows-setup.html)
 2. [NodeJS](https://nodejs.org/en/download/)
 3. [VS Code](https://code.visualstudio.com/Download)
