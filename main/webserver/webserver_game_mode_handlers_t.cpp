@@ -6,6 +6,7 @@
 #include "include/webserver_game_mode_handlers_t.hpp"
 #include "include/webserver_static_handlers_t.hpp"
 #include "../game_mode/include/game_mode_service_t.hpp"
+#include "../battery/include/battery_service_handler_t.hpp"
 
 const httpd_uri_t webserver_game_mode_handlers_t::game_mode_info_options_uri = {
     .uri = "/api/game-mode",
@@ -16,9 +17,13 @@ const httpd_uri_t webserver_game_mode_handlers_t::game_mode_info_options_uri = {
 
 esp_err_t webserver_game_mode_handlers_t::game_mode_info_get_handler(httpd_req_t *req)
 {
+    float voltage = battery_service_handler_t::get_voltage();
+    float current = battery_service_handler_t::get_current();
     game_mode_info_t *info = game_mode_service_t::get();
 
     cJSON *root = cJSON_CreateObject();
+    cJSON_AddNumberToObject(root, "voltage", voltage);
+    cJSON_AddNumberToObject(root, "current", current);
     cJSON_AddNumberToObject(root, "mode", info->mode);
     cJSON_AddNumberToObject(root, "start_timestamp", info->start_timestamp);
     cJSON_AddNumberToObject(root, "timestamp", esp_timer_get_time());

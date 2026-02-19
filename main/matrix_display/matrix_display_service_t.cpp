@@ -10,6 +10,8 @@
 const char *matrix_display_service_t::TAG = "matrix_display_service_t";
 
 const uint8_t matrix_display_service_t::blank[8] = {};
+
+// https://xantorohara.github.io/led-matrix-editor/
 const uint64_t matrix_display_service_t::digits_upper_parts[] = {
     0xc6c6c6fefe000000,
     0x3030303e3e000000,
@@ -40,6 +42,7 @@ const uint64_t matrix_display_service_t::special_characters[] = {
     0x0078605048040200, // ARROW_DOWN_RIGHT
     0x0000081422400000, // CHECK_MARK
     0x0048241212244800, // REWIND
+    0x003c2424243c1800, // BATTERY
 };
 max7219_t matrix_display_service_t::device;
 SemaphoreHandle_t matrix_display_service_t::mutex;

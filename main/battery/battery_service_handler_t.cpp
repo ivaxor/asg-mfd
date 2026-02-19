@@ -1,0 +1,93 @@
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "esp_log.h"
+#include "esp_err.h"
+#include "driver/i2c_master.h"
+#include "include/battery_service_handler_t.hpp"
+
+#define I2C_SDA_PIN GPIO_NUM_9
+#define I2C_SCL_PIN GPIO_NUM_10
+#define INA219_ADDR 0x40
+#define INA219_REG_CONFIG 0x00
+#define INA219_REG_SHUNT 0x01
+#define INA219_REG_BUS 0x02
+
+const char *battery_service_handler_t::TAG = "battery_service_handler_t";
+i2c_master_dev_handle_t battery_service_handler_t::dev_handle;
+float battery_service_handler_t::max_voltage = 0.0f;
+
+void battery_service_handler_t::init()
+{
+    i2c_master_bus_config_t bus_cfg = {
+        .i2c_port = -1,
+        .sda_io_num = (gpio_num_t)I2C_SDA_PIN,
+        .scl_io_num = (gpio_num_t)I2C_SCL_PIN,
+        .clk_source = I2C_CLK_SRC_DEFAULT,
+        .glitch_ignore_cnt = 7,
+        .intr_priority = 0,
+        .trans_queue_depth = 0,
+        .flags = {
+            .enable_internal_pullup = 1,
+            .allow_pd = 0,
+        },
+    };
+    i2c_master_bus_handle_t bus_handle;
+    ESP_ERROR_CHECK(i2c_new_master_bus(&bus_cfg, &bus_handle));
+
+    i2c_device_config_t dev_config = {
+        .dev_addr_length = I2C_ADDR_BIT_LEN_7,
+        .device_address = INA219_ADDR,
+        .scl_speed_hz = 400000,
+    };
+    ESP_ERROR_CHECK(i2c_master_bus_add_device(bus_handle, &dev_config, &dev_handle));
+
+    uint16_t config = 0x399F;
+    uint8_t config_data[3] = {INA219_REG_CONFIG, (uint8_t)(config >> 8), (uint8_t)(config & 0xFF)};
+    ESP_ERROR_CHECK(i2c_master_transmit(dev_handle, config_data, 3, -1));
+}
+
+bool battery_service_handler_t::is_low()
+{
+    float voltage = get_voltage();
+
+    // 3C: 12.6V max, 11.1V nominal, 9.9V low, 9V critical low
+    if (max_voltage >= 9.0f)
+        return voltage <= 9.9f;
+
+    // 2C: 8.4V max, 7.4V nominal, 6.6V low, 6V critical low
+    if (max_voltage >= 6.0f)
+        return voltage <= 6.6f;
+
+    ESP_LOGE(TAG, "Unsupported battery max voltage");
+    return true;
+}
+
+float battery_service_handler_t::get_voltage()
+{
+    int16_t raw_bus = (int16_t)read_registry(INA219_REG_BUS);
+    float voltage = (raw_bus >> 3) * 0.004f;
+
+    if (voltage > max_voltage)
+        max_voltage = voltage;
+
+    ESP_LOGI(TAG, "Voltage: %.2f V", voltage);
+
+    return voltage;
+}
+
+float battery_service_handler_t::get_current()
+{
+    int16_t raw_shunt = (int16_t)read_registry(INA219_REG_SHUNT);
+    float current = raw_shunt * 0.0001f;
+
+    ESP_LOGI(TAG, "Current: %.2f A", current);
+
+    return current;
+}
+
+int16_t battery_service_handler_t::read_registry(uint8_t registry)
+{
+    uint8_t data[2];
+    ESP_ERROR_CHECK(i2c_master_transmit_receive(dev_handle, &registry, 1, data, 2, -1));
+    return (int16_t)((data[0] << 8) | data[1]);
+}

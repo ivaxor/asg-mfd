@@ -10,6 +10,7 @@
 #include "../buzzer/include/buzzer_event_queue_handler_t.hpp"
 #include "../matrix_display/include/matrix_display_service_t.hpp"
 #include "../sd_card/include/sd_card_service_t.hpp"
+#include "../battery/include/battery_service_handler_t.hpp"
 
 #define RESPAWN_BUTTON_LED_PIN GPIO_NUM_5
 #define RESPAWN_BUTTON_SWITCH_PIN GPIO_NUM_1
@@ -333,6 +334,15 @@ void respawn_counter_service_t::render_info_on_matrix_display()
 {
     if (setup_mode == false)
     {
+        bool is_battery_low = battery_service_handler_t::is_low();
+        if (is_battery_low)
+        {
+            if (blink)
+                matrix_display_service_t::draw_special_character(0, BATTERY);
+            else
+                matrix_display_service_t::clear(0);
+        }
+
         matrix_display_service_t::draw_tall_number(1, 5, info.current_respawn_tokens / 100);
         matrix_display_service_t::draw_tall_number(2, 6, (info.current_respawn_tokens / 10) % 10);
         matrix_display_service_t::draw_tall_number(3, 7, info.current_respawn_tokens % 10);

@@ -11,6 +11,7 @@ typedef enum
     ARROW_DOWN_RIGHT,
     CHECK_MARK,
     REWIND,
+    BATTERY,
 } MATRIX_SPECIAL_CHARACTER;
 
 class matrix_display_service_t
