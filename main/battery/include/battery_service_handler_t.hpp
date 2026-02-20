@@ -16,6 +16,7 @@ private:
     static int16_t read_registry(uint8_t reg);
 
 public:
+    static void task(void *pvParameter);
     static void init();
     static bool is_low();
     static float get_voltage();

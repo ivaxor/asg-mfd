@@ -1,12 +1,12 @@
-import { Time } from "@angular/common";
-
 export enum GameMode {
-    RespawnCounter,
-    Bomb,
+    RespawnCounter,    
     Flag,
+    Bomb,
 }
 
 export interface GameModeInfo {
+    voltage: number,
+    current: number,
     mode: GameMode,
     start_timestamp: number,
     timestamp: number,

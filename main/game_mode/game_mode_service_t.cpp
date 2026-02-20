@@ -18,8 +18,7 @@ void game_mode_service_t::init()
     ESP_LOGI(TAG, "Initializing");
 
     // TODO: Implement reading game mode from SD card
-    // Set default mode to RESPAWN_COUNTER
-    GAME_MODE default_game_mode = FLAG;
+    GAME_MODE default_game_mode = RESPAWN_COUNTER;
     replace_init_new(default_game_mode);
 }
 
@@ -27,7 +26,7 @@ void game_mode_service_t::task(void *pvParameter)
 {
     ESP_LOGI(TAG, "Starting task");
 
-    while (1)
+    while (true)
     {
         vTaskDelay(pdMS_TO_TICKS(60000));
 

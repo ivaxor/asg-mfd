@@ -4,6 +4,8 @@
 #include "esp_err.h"
 #include "driver/i2c_master.h"
 #include "include/battery_service_handler_t.hpp"
+#include "../buzzer/include/buzzer_beep_type.hpp"
+#include "../buzzer/include/buzzer_event_queue_handler_t.hpp"
 
 #define I2C_SDA_PIN GPIO_NUM_9
 #define I2C_SCL_PIN GPIO_NUM_10
@@ -15,6 +17,21 @@
 const char *battery_service_handler_t::TAG = "battery_service_handler_t";
 i2c_master_dev_handle_t battery_service_handler_t::dev_handle;
 float battery_service_handler_t::max_voltage = 0.0f;
+
+void battery_service_handler_t::task(void *pvParameter)
+{
+    ESP_LOGI(TAG, "Starting task");
+
+    vTaskDelay(pdMS_TO_TICKS(5000));
+    while (true)
+    {
+        bool is_battery_low = is_low();
+        if (is_battery_low)
+            buzzer_event_queue_handler_t::add_to_queue(BUZZER_BEEP_TYPE::LOW_BATTERY);
+
+        vTaskDelay(pdMS_TO_TICKS(300000));
+    }
+}
 
 void battery_service_handler_t::init()
 {
@@ -70,7 +87,7 @@ float battery_service_handler_t::get_voltage()
     if (voltage > max_voltage)
         max_voltage = voltage;
 
-    ESP_LOGI(TAG, "Voltage: %.2f V", voltage);
+    ESP_LOGD(TAG, "Voltage: %.2f V", voltage);
 
     return voltage;
 }
@@ -80,7 +97,7 @@ float battery_service_handler_t::get_current()
     int16_t raw_shunt = (int16_t)read_registry(INA219_REG_SHUNT);
     float current = raw_shunt * 0.0001f;
 
-    ESP_LOGI(TAG, "Current: %.2f A", current);
+    ESP_LOGD(TAG, "Current: %.2f A", current);
 
     return current;
 }

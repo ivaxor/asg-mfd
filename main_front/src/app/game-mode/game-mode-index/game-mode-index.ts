@@ -23,6 +23,8 @@ export class GameModeIndex {
         const duration = (info.timestamp - info.start_timestamp) / 1000;
 
         return {
+          voltage: info.voltage,
+          current: info.current,
           mode: info.mode,
           start_timestamp: info.start_timestamp,
           timestamp: info.timestamp,

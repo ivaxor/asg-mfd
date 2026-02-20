@@ -2,11 +2,21 @@
     <p>game-mode-index works!</p>
 
     @if (info$ | async; as info) {
+    <p>
+        Battery:
+        {{info.voltage | number}} V,
+        {{info.current | number}} A,
+        {{(info.voltage * info.current) | number}} W
+    </p>
+
     <p>Game mode: {{info.mode}}</p>
 
     @switch (info.mode) {
     @case (gameMode.RespawnCounter) {
     <p>Respawn counter</p>
+    }
+    @case (gameMode.Flag) {
+    <p>Flag</p>
     }
     @default {
     <p>Unknown</p>

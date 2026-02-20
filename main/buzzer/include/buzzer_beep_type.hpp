@@ -9,6 +9,7 @@ typedef enum
     RESPAWN_TOKEN_DECREMENT,
     RESPAWN_BATCH,
     SETUP_MODE,
+    LOW_BATTERY,
 } BUZZER_BEEP_TYPE;
 
 #endif

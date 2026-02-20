@@ -47,7 +47,7 @@ void led_strip_service_t::task(void *pvParameter)
 
     uint16_t step = 0;
 
-    while (1)
+    while (true)
     {
         for (uint8_t led = 0; led < LED_STRIP_LEDS; led++)
         {

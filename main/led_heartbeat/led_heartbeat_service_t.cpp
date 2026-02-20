@@ -43,7 +43,7 @@ void led_heartbeat_service_t::task(void *pvParameter)
     bool fade = false;
     uint8_t intensity = 0;
 
-    while (1)
+    while (true)
     {
         ESP_ERROR_CHECK(led_strip_set_pixel(led, 0, 0, intensity, 0));
         ESP_ERROR_CHECK(led_strip_refresh(led));

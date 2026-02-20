@@ -64,12 +64,12 @@ void respawn_counter_service_t::task(void *pvParameter)
 
     render_info_on_matrix_display();
 
-    while (1)
+    while (true)
     {
+        blink = !blink;
+
         if (setup_mode)
         {
-            blink = !blink;
-
             render_setup_on_matrix_display();
             render_info_on_matrix_display();
             gpio_set_level(RESPAWN_BUTTON_LED_PIN, blink);
@@ -78,20 +78,8 @@ void respawn_counter_service_t::task(void *pvParameter)
             continue;
         }
 
-        if (info.current_respawn_tokens == 0)
-        {
-            if (blink == true)
-            {
-                blink = false;
-                gpio_set_level(RESPAWN_BUTTON_LED_PIN, blink);
-            }
-        }
-        else
-        {
-            blink = !blink;
-            gpio_set_level(RESPAWN_BUTTON_LED_PIN, blink);
-        }
-
+        render_info_on_matrix_display();
+        gpio_set_level(RESPAWN_BUTTON_LED_PIN, info.current_respawn_tokens == 0 ? false : blink);
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
@@ -284,12 +272,16 @@ void respawn_counter_service_t::render_setup_on_matrix_display()
         return;
     }
 
+    bool is_battery_low = battery_service_handler_t::is_low();
+
     switch (setup_mode_menu)
     {
     case REVERT:
         matrix_display_service_t::draw_special_character(0, WRENCH);
         if (blink)
             matrix_display_service_t::draw_special_character(4, REWIND);
+        else if (is_battery_low)
+            matrix_display_service_t::draw_special_character(4, BATTERY);
         else
             matrix_display_service_t::clear(4);
         break;
@@ -298,32 +290,44 @@ void respawn_counter_service_t::render_setup_on_matrix_display()
         matrix_display_service_t::draw_special_character(0, WRENCH);
         if (blink)
             matrix_display_service_t::draw_special_character(4, ARROW_UP_RIGHT);
+        else if (is_battery_low)
+            matrix_display_service_t::draw_special_character(4, BATTERY);
         else
             matrix_display_service_t::clear(4);
         break;
 
     case TOKENS_INCREASE_SELECTED:
         matrix_display_service_t::draw_special_character(0, WRENCH);
-        matrix_display_service_t::draw_special_character(4, ARROW_UP_RIGHT);
+        if (blink)
+            matrix_display_service_t::draw_special_character(4, ARROW_UP_RIGHT);
+        else if (is_battery_low)
+            matrix_display_service_t::draw_special_character(4, BATTERY);
         break;
 
     case TOKENS_DECREASE:
         matrix_display_service_t::draw_special_character(0, WRENCH);
         if (blink)
             matrix_display_service_t::draw_special_character(4, ARROW_DOWN_RIGHT);
+        else if (is_battery_low)
+            matrix_display_service_t::draw_special_character(4, BATTERY);
         else
             matrix_display_service_t::clear(4);
         break;
 
     case TOKENS_DECREASE_SELECTED:
         matrix_display_service_t::draw_special_character(0, WRENCH);
-        matrix_display_service_t::draw_special_character(4, ARROW_DOWN_RIGHT);
+        if (blink)
+            matrix_display_service_t::draw_special_character(4, ARROW_DOWN_RIGHT);
+        else if (is_battery_low)
+            matrix_display_service_t::draw_special_character(4, BATTERY);
         break;
 
     case SAVE:
         matrix_display_service_t::draw_special_character(0, WRENCH);
         if (blink)
             matrix_display_service_t::draw_special_character(4, CHECK_MARK);
+        else if (is_battery_low)
+            matrix_display_service_t::draw_special_character(4, BATTERY);
         else
             matrix_display_service_t::clear(4);
         break;
@@ -335,13 +339,10 @@ void respawn_counter_service_t::render_info_on_matrix_display()
     if (setup_mode == false)
     {
         bool is_battery_low = battery_service_handler_t::is_low();
-        if (is_battery_low)
-        {
-            if (blink)
-                matrix_display_service_t::draw_special_character(0, BATTERY);
-            else
-                matrix_display_service_t::clear(0);
-        }
+        if (is_battery_low && !blink)
+            matrix_display_service_t::draw_special_character(4, BATTERY);
+        else
+            matrix_display_service_t::clear(4);
 
         matrix_display_service_t::draw_tall_number(1, 5, info.current_respawn_tokens / 100);
         matrix_display_service_t::draw_tall_number(2, 6, (info.current_respawn_tokens / 10) % 10);

@@ -1,5 +1,5 @@
 {
-    "idf.portWin": "COM5",
+    "idf.portWin": "COM8",
     "idf.flashType": "UART",
      "files.associations": {
         "regex": "cpp",
@@ -12,5 +12,6 @@
         "ESP_LOGW",
         "espressif",
         "respawn"
-    ]
+    ],
+    "idf.currentSetup": "C:/Espressif/frameworks/esp-idf-v5.5/"
 }
