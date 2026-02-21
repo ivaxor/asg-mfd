@@ -4,6 +4,7 @@
 #include "esp_err.h"
 #include "driver/i2c_master.h"
 #include "include/battery_service_handler_t.hpp"
+#include "include/battery_state_type.hpp"
 #include "../buzzer/include/buzzer_beep_type.hpp"
 #include "../buzzer/include/buzzer_event_queue_handler_t.hpp"
 
@@ -25,9 +26,21 @@ void battery_service_handler_t::task(void *pvParameter)
     vTaskDelay(pdMS_TO_TICKS(5000));
     while (true)
     {
-        bool is_battery_low = is_low();
-        if (is_battery_low)
+        BATTERY_STATE_TYPE battery_state = state();
+        switch (battery_state)
+        {
+        case NORMAL:
+        case UNKNOWN:
+            break;
+
+        case LOW:
             buzzer_event_queue_handler_t::add_to_queue(BUZZER_BEEP_TYPE::LOW_BATTERY);
+            break;
+
+        case CUTOFF:
+            esp_restart();
+            break;
+        }
 
         vTaskDelay(pdMS_TO_TICKS(300000));
     }
@@ -63,20 +76,35 @@ void battery_service_handler_t::init()
     ESP_ERROR_CHECK(i2c_master_transmit(dev_handle, config_data, 3, -1));
 }
 
-bool battery_service_handler_t::is_low()
+BATTERY_STATE_TYPE battery_service_handler_t::state()
 {
     float voltage = get_voltage();
 
-    // 3C: 12.6V max, 11.1V nominal, 9.9V low, 9V critical low
-    if (max_voltage >= 9.0f)
-        return voltage <= 9.9f;
+    float cell_normal = 4.2f;
+    float cell_low = 3.76f;
+    float cell_cutoff = 3.5f;
+    float cell_unknown = 3.0f;
 
-    // 2C: 8.4V max, 7.4V nominal, 6.6V low, 6V critical low
-    if (max_voltage >= 6.0f)
-        return voltage <= 6.6f;
+    int cells = 1;
+    do
+    {
+        if (voltage <= cell_unknown * cells)
+            return UNKNOWN;
+
+        if (voltage <= cell_cutoff * cells)
+            return CUTOFF;
+
+        if (voltage <= cell_low * cells)
+            return LOW;
+
+        if (voltage <= cell_normal * cells)
+            return NORMAL;
+
+        cells++;
+    } while (true);
 
     ESP_LOGE(TAG, "Unsupported battery max voltage");
-    return true;
+    return UNKNOWN;
 }
 
 float battery_service_handler_t::get_voltage()

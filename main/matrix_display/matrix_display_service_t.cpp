@@ -72,6 +72,9 @@ void matrix_display_service_t::init()
 
 void matrix_display_service_t::uninit()
 {
+    for (uint8_t i = 0; i < 8; i++)
+        clear(i);
+
     if (xSemaphoreTake(mutex, pdMS_TO_TICKS(portMAX_DELAY)) == pdTRUE)
     {
         max7219_set_shutdown_mode(&device, true);

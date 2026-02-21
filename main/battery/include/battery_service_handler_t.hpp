@@ -1,6 +1,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "driver/i2c_master.h"
+#include "battery_state_type.hpp"
 
 #ifndef BATTERY_SERVICE_HANDLER_H
 #define BATTERY_SERVICE_HANDLER_H
@@ -18,7 +19,7 @@ private:
 public:
     static void task(void *pvParameter);
     static void init();
-    static bool is_low();
+    static BATTERY_STATE_TYPE state();
     static float get_voltage();
     static float get_current();
 };
