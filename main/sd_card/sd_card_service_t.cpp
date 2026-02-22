@@ -29,7 +29,7 @@ void sd_card_service_t::init()
         .allocation_unit_size = 16 * 1024,
     };
 
-    ESP_LOGI(TAG, "Mounting SD card file system");
+    ESP_LOGD(TAG, "Mounting SD card file system");
 
     esp_err_t err = esp_vfs_fat_sdspi_mount(MOUNT_POINT, &host, &slot_config, &mount_config, &card);
     if (err != ESP_OK)
@@ -41,7 +41,7 @@ void sd_card_service_t::init()
     sdmmc_card_print_info(stdout, card);
     card_initialized = true;
 
-    ESP_LOGI(TAG, "SD card file system mounted");
+    ESP_LOGD(TAG, "SD card file system mounted");
 }
 
 respawn_counter_info_t *sd_card_service_t::read_respawn_counter_info()

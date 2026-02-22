@@ -21,7 +21,7 @@ float battery_service_handler_t::max_voltage = 0.0f;
 
 void battery_service_handler_t::task(void *pvParameter)
 {
-    ESP_LOGI(TAG, "Starting task");
+    ESP_LOGD(TAG, "Starting task");
 
     vTaskDelay(pdMS_TO_TICKS(5000));
     while (true)
@@ -38,7 +38,7 @@ void battery_service_handler_t::task(void *pvParameter)
             break;
 
         case CUTOFF:
-            ESP_LOGI(TAG, "Battery level critically low. Restarting for cutoff");
+            ESP_LOGW(TAG, "Battery level critically low. Restarting for cutoff");
             esp_restart();
             break;
         }

@@ -14,7 +14,7 @@ led_strip_handle_t led_heartbeat_service_t::led;
 
 void led_heartbeat_service_t::init()
 {
-    ESP_LOGI(TAG, "Initializing");
+    ESP_LOGD(TAG, "Initializing");
 
     led_strip_rmt_config_t rmt_config = {
         .clk_src = RMT_CLK_SRC_DEFAULT,
@@ -38,7 +38,7 @@ void led_heartbeat_service_t::init()
 
 void led_heartbeat_service_t::task(void *pvParameter)
 {
-    ESP_LOGI(TAG, "Starting task");
+    ESP_LOGD(TAG, "Starting task");
 
     bool fade = false;
     uint8_t intensity = 0;

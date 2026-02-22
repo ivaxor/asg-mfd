@@ -12,7 +12,7 @@ QueueHandle_t buzzer_event_queue_handler_t::queue;
 
 void buzzer_event_queue_handler_t::init()
 {
-    ESP_LOGI(TAG, "Initializing");
+    ESP_LOGD(TAG, "Initializing");
 
     gpio_set_direction(BUZZER_PIN, GPIO_MODE_OUTPUT);
     gpio_set_level(BUZZER_PIN, 0);
@@ -36,14 +36,14 @@ void buzzer_event_queue_handler_t::add_to_queue(BUZZER_BEEP_TYPE beep_type)
 
 void buzzer_event_queue_handler_t::task(void *pvParameter)
 {
-    ESP_LOGI(TAG, "Starting task");
+    ESP_LOGD(TAG, "Starting task");
 
     while (true)
     {
         BUZZER_BEEP_TYPE beep_type;
         xQueueReceive(queue, &beep_type, portMAX_DELAY);
     new_beep:
-        ESP_LOGI(TAG, "Buzzer event received. Type: %u", beep_type);
+        ESP_LOGD(TAG, "Buzzer event received. Type: %u", beep_type);
 
         switch (beep_type)
         {

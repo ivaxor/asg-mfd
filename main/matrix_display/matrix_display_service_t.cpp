@@ -50,7 +50,7 @@ SemaphoreHandle_t matrix_display_service_t::mutex;
 
 void matrix_display_service_t::init()
 {
-    ESP_LOGI(TAG, "Initializing");
+    ESP_LOGD(TAG, "Initializing");
 
     mutex = xSemaphoreCreateMutex();
     if (mutex == NULL)

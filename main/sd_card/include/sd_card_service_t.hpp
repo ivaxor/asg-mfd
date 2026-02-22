@@ -10,7 +10,7 @@ class sd_card_service_t
 private:
     static const char *TAG;
     static const char *respawn_counter_info_file_path;
-    
+
     static sdmmc_card_t *card;
     static bool card_initialized;
 

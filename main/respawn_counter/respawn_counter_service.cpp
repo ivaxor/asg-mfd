@@ -25,7 +25,7 @@ respawn_counter_info_t respawn_counter_service_t::setup_mode_info;
 
 void respawn_counter_service_t::init()
 {
-    ESP_LOGI(TAG, "Initializing");
+    ESP_LOGD(TAG, "Initializing");
 
     setup_mode = false;
 
@@ -61,7 +61,7 @@ void respawn_counter_service_t::uninit()
 
 void respawn_counter_service_t::task(void *pvParameter)
 {
-    ESP_LOGI(TAG, "Starting task");
+    ESP_LOGD(TAG, "Starting task");
 
     render_info_on_matrix_display();
 
@@ -103,17 +103,17 @@ void respawn_counter_service_t::handle_long_click(void *arg, void *usr_data)
 
 void respawn_counter_service_t::short_press()
 {
-    ESP_LOGI(TAG, "Short press");
+    ESP_LOGD(TAG, "Short press");
 
     if (info.current_respawn_tokens == 0)
     {
-        ESP_LOGI(TAG, "No respawn token left");
+        ESP_LOGD(TAG, "No respawn token left");
         buzzer_event_queue_handler_t::add_to_queue(RESPAWN_NO_TOKENS);
         return;
     }
 
     info.current_respawn_tokens--;
-    ESP_LOGI(TAG, "Respawn token decremented. Tokens: %lu", info.current_respawn_tokens);
+    ESP_LOGD(TAG, "Respawn token decremented. Tokens: %lu", info.current_respawn_tokens);
 
     bool respawn_batch = true;
 
@@ -128,19 +128,19 @@ void respawn_counter_service_t::short_press()
         if (info.current_respawn_tokens < info.policies[i].max)
             continue;
 
-        ESP_LOGI(TAG, "Using respawn policy. Priority: %u. Min: %lu. Max: %lu. Batch size: %lu", info.policies[i].priority, info.policies[i].min, info.policies[i].max, info.policies[i].batch_size);
+        ESP_LOGD(TAG, "Using respawn policy. Priority: %u. Min: %lu. Max: %lu. Batch size: %lu", info.policies[i].priority, info.policies[i].min, info.policies[i].max, info.policies[i].batch_size);
 
         respawn_batch = info.current_respawn_tokens % info.policies[i].batch_size == 0;
     }
 
     if (respawn_batch == true)
     {
-        ESP_LOGI(TAG, "Batch respawn");
+        ESP_LOGD(TAG, "Batch respawn");
         buzzer_event_queue_handler_t::add_to_queue(RESPAWN_BATCH);
     }
     else
     {
-        ESP_LOGI(TAG, "Waiting for batch respawn");
+        ESP_LOGD(TAG, "Waiting for batch respawn");
         buzzer_event_queue_handler_t::add_to_queue(RESPAWN_TOKEN_DECREMENT);
     }
 
@@ -149,7 +149,7 @@ void respawn_counter_service_t::short_press()
 
 void respawn_counter_service_t::long_press()
 {
-    ESP_LOGI(TAG, "Setup mode enable");
+    ESP_LOGD(TAG, "Setup mode enable");
 
     setup_mode = true;
     setup_mode_menu = REVERT;
@@ -166,7 +166,7 @@ void respawn_counter_service_t::long_press()
 
 void respawn_counter_service_t::setup_mode_short_press()
 {
-    ESP_LOGI(TAG, "Setup mode short press");
+    ESP_LOGD(TAG, "Setup mode short press");
 
     switch (setup_mode_menu)
     {
@@ -206,7 +206,7 @@ void respawn_counter_service_t::setup_mode_short_press()
 
 void respawn_counter_service_t::setup_mode_long_press()
 {
-    ESP_LOGI(TAG, "Setup mode long press");
+    ESP_LOGD(TAG, "Setup mode long press");
 
     switch (setup_mode_menu)
     {

@@ -20,7 +20,7 @@ static const char *TAG = "app_main";
 
 extern "C" void app_main(void)
 {
-    ESP_LOGI(TAG, "Starting application setup");
+    ESP_LOGD(TAG, "Starting application setup");
     spi_service_t::init();
     sd_card_service_t::init();
     // TODO: Remove after issue resovled:
@@ -35,7 +35,7 @@ E (829) led_strip_rmt: led_strip_new_rmt_device(154): create RMT TX channel fail
     buzzer_event_queue_handler_t::init();
     battery_service_handler_t::init();
     game_mode_service_t::init();
-    ESP_LOGI(TAG, "Application setup completed");
+    ESP_LOGD(TAG, "Application setup completed");
 
     BATTERY_STATE_TYPE battery_state = battery_service_handler_t::state();
     switch (battery_state)
@@ -44,13 +44,13 @@ E (829) led_strip_rmt: led_strip_new_rmt_device(154): create RMT TX channel fail
     case LOW:
     case UNKNOWN:
     {
-        ESP_LOGI(TAG, "Starting application tasks");
+        ESP_LOGD(TAG, "Starting application tasks");
         xTaskCreate(buzzer_event_queue_handler_t::task, "buzzer_event_queue_handler_t", 4096, NULL, 5, NULL);
         xTaskCreate(battery_service_handler_t::task, "battery_service_handler_t", 4096, NULL, 5, NULL);
         xTaskCreate(game_mode_service_t::task, "game_mode_service_t", 4096, NULL, 5, NULL);
         // TODO: Remove after issue resolved
         xTaskCreate(led_heartbeat_service_t::task, "led_heartbeat_service_t", 4096, NULL, 5, NULL);
-        ESP_LOGI(TAG, "Application tasks started");
+        ESP_LOGD(TAG, "Application tasks started");
 
         buzzer_event_queue_handler_t::add_to_queue(BUZZER_BEEP_TYPE::SETUP_MODE);
         break;
@@ -58,7 +58,7 @@ E (829) led_strip_rmt: led_strip_new_rmt_device(154): create RMT TX channel fail
 
     case CUTOFF:
     {
-        ESP_LOGI(TAG, "Battery is critically low. Cutting off");
+        ESP_LOGW(TAG, "Battery is critically low. Cutting off");
         buzzer_event_queue_handler_t::add_to_queue(BUZZER_BEEP_TYPE::LOW_BATTERY);
         vTaskDelay(pdMS_TO_TICKS(1000));
 

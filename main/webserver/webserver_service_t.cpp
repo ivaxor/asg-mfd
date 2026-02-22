@@ -55,9 +55,9 @@ void webserver_service_t::wifi_init_softap()
 
     char ip_addr[16];
     inet_ntoa_r(ip_info.ip.addr, ip_addr, 16);
-    ESP_LOGI(TAG, "Set up softAP with IP: %s", ip_addr);
+    ESP_LOGD(TAG, "Set up softAP with IP: %s", ip_addr);
 
-    ESP_LOGI(TAG, "wifi_init_softap finished. SSID:'%s'", ap_ssid);
+    ESP_LOGD(TAG, "wifi_init_softap finished. SSID:'%s'", ap_ssid);
 }
 
 void webserver_service_t::dhcp_set_captiveportal_url()
@@ -68,7 +68,7 @@ void webserver_service_t::dhcp_set_captiveportal_url()
 
     char ip_addr[16];
     inet_ntoa_r(ip_info.ip.addr, ip_addr, 16);
-    ESP_LOGI(TAG, "Set up softAP with IP: %s", ip_addr);
+    ESP_LOGD(TAG, "Set up softAP with IP: %s", ip_addr);
 
     // turn the IP into a URI
     char *captiveportal_uri = (char *)malloc(32 * sizeof(char));
@@ -93,11 +93,11 @@ httpd_handle_t webserver_service_t::start_webserver()
     config.max_uri_handlers = 32;
 
     // Start the httpd server
-    ESP_LOGI(TAG, "Starting server on port: '%lu'", config.server_port);
+    ESP_LOGD(TAG, "Starting server on port: '%lu'", config.server_port);
     if (httpd_start(&server, &config) == ESP_OK)
     {
         // Set URI handlers
-        ESP_LOGI(TAG, "Registering URI handlers");
+        ESP_LOGD(TAG, "Registering URI handlers");
 
         ESP_ERROR_CHECK(httpd_register_uri_handler(server, &webserver_static_handlers_t::index_html_uri));
         ESP_ERROR_CHECK(httpd_register_uri_handler(server, &webserver_static_handlers_t::main_js_uri));

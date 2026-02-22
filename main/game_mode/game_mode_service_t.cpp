@@ -15,7 +15,7 @@ TaskHandle_t game_mode_service_t::led_strip_task;
 
 void game_mode_service_t::init()
 {
-    ESP_LOGI(TAG, "Initializing");
+    ESP_LOGD(TAG, "Initializing");
 
     // TODO: Implement reading game mode from SD card
     GAME_MODE default_game_mode = RESPAWN_COUNTER;
@@ -44,7 +44,7 @@ void game_mode_service_t::uninit()
 
 void game_mode_service_t::task(void *pvParameter)
 {
-    ESP_LOGI(TAG, "Starting task");
+    ESP_LOGD(TAG, "Starting task");
 
     while (true)
     {
@@ -54,7 +54,7 @@ void game_mode_service_t::task(void *pvParameter)
         {
         case RESPAWN_COUNTER:
         {
-            ESP_LOGI(TAG, "Saving respawn counter info to SD card");
+            ESP_LOGD(TAG, "Saving respawn counter info to SD card");
             respawn_counter_info_t *info = respawn_counter_service_t::get();
             sd_card_service_t::write_respawn_counter_info(info);
             break;
@@ -88,7 +88,7 @@ void game_mode_service_t::init_new(GAME_MODE new_mode)
         respawn_counter_info_t *info = sd_card_service_t::read_respawn_counter_info();
         if (info != NULL)
         {
-            ESP_LOGI(TAG, "Replacing game mode to %u", new_mode);
+            ESP_LOGD(TAG, "Replacing game mode to %u", new_mode);
             respawn_counter_service_t::replace(info);
             delete[] info->policies;
             delete info;
@@ -123,7 +123,7 @@ game_mode_info_t *game_mode_service_t::get()
 
 void game_mode_service_t::replace(GAME_MODE new_mode)
 {
-    ESP_LOGI(TAG, "Replacing game mode to %u", new_mode);
+    ESP_LOGD(TAG, "Replacing game mode to %u", new_mode);
 
     uninit();
     init_new(new_mode);
