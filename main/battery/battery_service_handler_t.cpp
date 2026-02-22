@@ -38,6 +38,7 @@ void battery_service_handler_t::task(void *pvParameter)
             break;
 
         case CUTOFF:
+            ESP_LOGI(TAG, "Battery level critically low. Restarting for cutoff");
             esp_restart();
             break;
         }
@@ -81,7 +82,7 @@ BATTERY_STATE_TYPE battery_service_handler_t::state()
     float voltage = get_voltage();
 
     float cell_normal = 4.2f;
-    float cell_low = 3.76f;
+    float cell_low = 3.7f;
     float cell_cutoff = 3.5f;
     float cell_unknown = 3.0f;
 

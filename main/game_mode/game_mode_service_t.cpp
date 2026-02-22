@@ -19,7 +19,27 @@ void game_mode_service_t::init()
 
     // TODO: Implement reading game mode from SD card
     GAME_MODE default_game_mode = RESPAWN_COUNTER;
-    replace_init_new(default_game_mode);
+    init_new(default_game_mode);
+}
+
+void game_mode_service_t::uninit()
+{
+    switch (info.mode)
+    {
+    case RESPAWN_COUNTER:
+        vTaskDelete(respawn_counter_task);
+        respawn_counter_service_t::uninit();
+        matrix_display_service_t::uninit();
+        break;
+
+    case FLAG:
+        // TODO: Implement
+        vTaskDelete(led_strip_task);
+        break;
+
+    case BOMB:
+        break;
+    }
 }
 
 void game_mode_service_t::task(void *pvParameter)
@@ -49,41 +69,14 @@ void game_mode_service_t::task(void *pvParameter)
 
         default:
         {
-             // TODO: Throw exception
+            // TODO: Throw exception
             break;
         }
         }
     }
 }
 
-void game_mode_service_t::replace_cleanup()
-{
-    switch (info.mode)
-    {
-    case RESPAWN_COUNTER:
-    {
-        vTaskDelete(respawn_counter_task);
-        respawn_counter_service_t::uninit();
-        matrix_display_service_t::uninit();
-        break;
-    }
-
-    case FLAG:
-    {
-        // TODO: Implement
-        vTaskDelete(led_strip_task);
-        break;
-    }
-
-    default:
-    {
-         // TODO: Throw exception
-        break;
-    }
-    }
-}
-
-void game_mode_service_t::replace_init_new(GAME_MODE new_mode)
+void game_mode_service_t::init_new(GAME_MODE new_mode)
 {
     switch (new_mode)
     {
@@ -113,9 +106,8 @@ void game_mode_service_t::replace_init_new(GAME_MODE new_mode)
         break;
     }
 
-    default:
+    case BOMB:
     {
-         // TODO: Throw exception
         break;
     }
     }
@@ -133,6 +125,6 @@ void game_mode_service_t::replace(GAME_MODE new_mode)
 {
     ESP_LOGI(TAG, "Replacing game mode to %u", new_mode);
 
-    replace_cleanup();
-    replace_init_new(new_mode);
+    uninit();
+    init_new(new_mode);
 }

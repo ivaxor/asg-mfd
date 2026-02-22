@@ -20,13 +20,6 @@ static const char *TAG = "app_main";
 
 extern "C" void app_main(void)
 {
-    gpio_config_t gpio_cfg = {
-        .pin_bit_mask = 0xFFFFFFFF,
-        .mode = GPIO_MODE_INPUT,
-        .pull_up_en = GPIO_PULLUP_DISABLE,
-        .pull_down_en = GPIO_PULLDOWN_DISABLE,
-    };
-
     ESP_LOGI(TAG, "Starting application setup");
     spi_service_t::init();
     sd_card_service_t::init();
@@ -50,6 +43,7 @@ E (829) led_strip_rmt: led_strip_new_rmt_device(154): create RMT TX channel fail
     case NORMAL:
     case LOW:
     case UNKNOWN:
+    {
         ESP_LOGI(TAG, "Starting application tasks");
         xTaskCreate(buzzer_event_queue_handler_t::task, "buzzer_event_queue_handler_t", 4096, NULL, 5, NULL);
         xTaskCreate(battery_service_handler_t::task, "battery_service_handler_t", 4096, NULL, 5, NULL);
@@ -60,15 +54,26 @@ E (829) led_strip_rmt: led_strip_new_rmt_device(154): create RMT TX channel fail
 
         buzzer_event_queue_handler_t::add_to_queue(BUZZER_BEEP_TYPE::SETUP_MODE);
         break;
+    }
 
     case CUTOFF:
+    {
         ESP_LOGI(TAG, "Battery is critically low. Cutting off");
-
         buzzer_event_queue_handler_t::add_to_queue(BUZZER_BEEP_TYPE::LOW_BATTERY);
-        vTaskDelay(pdMS_TO_TICKS(5000));
+        vTaskDelay(pdMS_TO_TICKS(1000));
 
+        game_mode_service_t::uninit();
+
+        gpio_config_t gpio_cfg = {
+            .pin_bit_mask = 0xFFFFFFFF,
+            .mode = GPIO_MODE_INPUT,
+            .pull_up_en = GPIO_PULLUP_DISABLE,
+            .pull_down_en = GPIO_PULLDOWN_DISABLE,
+        };
         gpio_config(&gpio_cfg);
         esp_deep_sleep_start();
+
         break;
+    }
     }
 }

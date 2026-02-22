@@ -13,13 +13,13 @@ private:
     static TaskHandle_t respawn_counter_task;
     static TaskHandle_t led_strip_task;
 
-    static void replace_cleanup();
-    static void replace_init_new(GAME_MODE new_mode);
-    
+    static void init_new(GAME_MODE new_mode);
+
     game_mode_service_t();
 
 public:
     static void init();
+    static void uninit();
     static void task(void *pvParameter);
     static game_mode_info_t *get();
     static void replace(GAME_MODE new_mode);

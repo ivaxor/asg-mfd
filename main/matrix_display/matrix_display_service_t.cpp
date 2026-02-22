@@ -6,10 +6,11 @@
 #include "include/matrix_display_service_t.hpp"
 
 #define MATRIX_DISPLAY_CS_PIN GPIO_NUM_0
+#define MATRIX_DISPLAY_SEGMENTS 8
 
 const char *matrix_display_service_t::TAG = "matrix_display_service_t";
 
-const uint8_t matrix_display_service_t::blank[8] = {};
+const uint8_t matrix_display_service_t::blank[MATRIX_DISPLAY_SEGMENTS] = {};
 
 // https://xantorohara.github.io/led-matrix-editor/
 const uint64_t matrix_display_service_t::digits_upper_parts[] = {
@@ -60,20 +61,19 @@ void matrix_display_service_t::init()
 
     device = {
         .digits = 0,
-        .cascade_size = 8,
+        .cascade_size = MATRIX_DISPLAY_SEGMENTS,
         .mirrored = true,
     };
 
     // Initialize the device descriptor and display chain
     ESP_ERROR_CHECK(max7219_init_desc(&device, SPI2_HOST, MAX7219_MAX_CLOCK_SPEED_HZ, MATRIX_DISPLAY_CS_PIN));
     ESP_ERROR_CHECK(max7219_init(&device));
-    ESP_ERROR_CHECK(max7219_set_brightness(&device, MAX7219_MAX_BRIGHTNESS));
+    ESP_ERROR_CHECK(max7219_set_brightness(&device, MAX7219_MAX_BRIGHTNESS / 2));
 }
 
 void matrix_display_service_t::uninit()
 {
-    for (uint8_t i = 0; i < 8; i++)
-        clear(i);
+    clear_all();
 
     if (xSemaphoreTake(mutex, pdMS_TO_TICKS(portMAX_DELAY)) == pdTRUE)
     {
@@ -88,7 +88,7 @@ void matrix_display_service_t::uninit()
 void matrix_display_service_t::clear(uint8_t display)
 {
     if (xSemaphoreTake(mutex, pdMS_TO_TICKS(portMAX_DELAY)) == pdTRUE)
-        max7219_draw_image_8x8(&matrix_display_service_t::device, display * 8, (uint8_t *)blank);
+        max7219_draw_image_8x8(&matrix_display_service_t::device, display * MATRIX_DISPLAY_SEGMENTS, (uint8_t *)blank);
 
     xSemaphoreGive(mutex);
 }
@@ -104,7 +104,7 @@ void matrix_display_service_t::clear_all()
 void matrix_display_service_t::draw_special_character(uint8_t display, MATRIX_SPECIAL_CHARACTER character)
 {
     if (xSemaphoreTake(mutex, pdMS_TO_TICKS(portMAX_DELAY)) == pdTRUE)
-        max7219_draw_image_8x8(&matrix_display_service_t::device, display * 8, (uint8_t *)special_characters + character * 8);
+        max7219_draw_image_8x8(&matrix_display_service_t::device, display * MATRIX_DISPLAY_SEGMENTS, (uint8_t *)special_characters + character * MATRIX_DISPLAY_SEGMENTS);
 
     xSemaphoreGive(mutex);
 }
@@ -113,8 +113,8 @@ void matrix_display_service_t::draw_tall_number(uint8_t display1, uint8_t displa
 {
     if (xSemaphoreTake(mutex, pdMS_TO_TICKS(portMAX_DELAY)) == pdTRUE)
     {
-        max7219_draw_image_8x8(&matrix_display_service_t::device, display1 * 8, (uint8_t *)digits_upper_parts + number * 8);
-        max7219_draw_image_8x8(&matrix_display_service_t::device, display2 * 8, (uint8_t *)digits_lower_parts + number * 8);
+        max7219_draw_image_8x8(&matrix_display_service_t::device, display1 * MATRIX_DISPLAY_SEGMENTS, (uint8_t *)digits_upper_parts + number * MATRIX_DISPLAY_SEGMENTS);
+        max7219_draw_image_8x8(&matrix_display_service_t::device, display2 * MATRIX_DISPLAY_SEGMENTS, (uint8_t *)digits_lower_parts + number * MATRIX_DISPLAY_SEGMENTS);
     }
 
     xSemaphoreGive(mutex);
